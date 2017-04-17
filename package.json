@@ -4,7 +4,13 @@
   "description": "An API for interacting with the schedule data of the various TPT channels.",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "node build/index.js"
+  },
+  "jest": {
+    "transform": {
+      ".*": "<rootDir>/node_modules/babel-jest"
+    }
   },
   "author": "TPT",
   "license": "ISC",
@@ -13,6 +19,9 @@
     "supertest": "^3.0.0"
   },
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.4.0",
+    "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
