@@ -1,0 +1,22 @@
+# Miscellaneous
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies - NPM
+node_modules
+
+# Build Files
+/build*
+/flow-typed*
+
+# Environment Config
+
+# Environment Credentials
+.env
+.eslintrc
+
+# Databases, Stores
+/data
