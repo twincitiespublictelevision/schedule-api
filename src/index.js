@@ -2,11 +2,20 @@
 
 import * as http from 'http';
 import api from './api';
+import dataStore from './database';
 
 const app = new api();
+const db 	= new dataStore();
 const DEFAULT_PORT = 3000;
 const port = normalizePort(process.env.PORT);
 const server = http.createServer(app.express);
+
+// DB Connection
+
+db.initialize();
+db.connect();
+
+// Server Connection
 
 server.listen(port);
 server.on('error', onError);
