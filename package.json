@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "An API for interacting with the schedule data of the various TPT channels.",
   "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twincitiespublictelevision/schedule-api"
+  },
   "scripts": {
     "test": "jest",
     "start": "node build/index.js"
