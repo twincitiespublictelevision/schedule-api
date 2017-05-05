@@ -12,31 +12,25 @@ let tptKidsSchedule = '',
 		tptLifeSchedule = '',
 		tptMNOSchedule	= '';
 
-// Check to make sure a backup schedule data directory exists
-// If not, create one
-function verifyBackupDirectoryPath(directoryPath) {
-	if (fs.existsSync(backupDataDirectoryPath) === true) {
-		console.log('Backup directory exists.');
+// Check to make sure a given directory exists
+// If not, create it
+function verifyDirectoryPath(directoryPath) {
+	if (fs.existsSync(directoryPath) === true) {
+		console.log('%s directory exists.', directoryPath);
 	} else {
-		fs.mkdir(backupDataDirectoryPath, function() {
-			console.log('Backup directory created.');
+		fs.mkdir(directoryPath, function(error) {
+			if (error) {
+				console.log(error);
+			}
+			console.log('%s directory created.', directoryPath);
 		});
 	}
 }
 
-// Check to make sure a current schedule data directory exists
-// If not, create one
-function verifyDataDirectoryPath(directoryPath) {
-	if (fs.existsSync(currentDataDirectoryPath) === true) {
-		console.log('Current data directory exists.');
-	} else {
-		fs.mkdir(currentDataDirectoryPath, function() {
-			console.log('Current data directory created.');
-		});
-	}
-}
-
-// Add leading 0 to integers less than 10
+/**
+ * Add leading 0 to integers less than 10
+ * @param {number} num
+ */
 function leadingZero(num) {
 	if (num < 10) {
 		return num = '0' + num;
@@ -45,7 +39,11 @@ function leadingZero(num) {
 	}
 }
 
-// Get the current date to append to schedule file
+/**
+ * Gets the current date, returns a formatted string
+ * Format is yyyymmdd-hh:min
+ * @returns {String} formattedDateString
+ */
 function getCurrentDate() {
 	let currentDate = new Date(),
 			hh = leadingZero(currentDate.getHours()),
@@ -91,20 +89,20 @@ getFileNames(baseDirectory, function(error, files) {
 });
 
 // Move schedule data files to the read / current directory
-function moveScheduleDataToReadDirectory(scheduleDataPath, fn) {
+function moveScheduleDataFile(sourceFilePath, destinationPath, fn) {
 	let currentDate = getCurrentDate();
-	let currentFile = path.parse(scheduleDataPath);
+	let currentFile = path.parse(sourceFilePath);
 
-	if (fs.existsSync(scheduleDataPath) === true) {
-		fs.readFile(scheduleDataPath, function(error, data) {
+	if (fs.existsSync(sourceFilePath) === true) {
+		fs.readFile(sourceFilePath, function(error, data) {
 			if (error) {
 				fn(error, undefined);
 			} else {
-				fs.writeFile(currentDataDirectoryPath + currentFile.name + currentDate + currentFile.ext, data, function(error) {
+				fs.writeFile(destinationPath + currentFile.name + currentDate + currentFile.ext, data, function(error) {
 					if (error) {
 						fn(error, undefined);
 					} else {
-						console.log('New schedule data file created.');
+						console.log('Success! %s moved to %s.', currentFile.name, destinationPath);
 					}
 				});
 			}
@@ -126,7 +124,7 @@ function moveScheduleDataToBackupDirectory(scheduleData, fn) {
 					if (error) {
 						fn(error, undefined);
 					} else {
-						console.log('New schedule data file created.');
+						console.log('Success! %s moved to %s.', sourceFilePath, destinationPath);
 					}
 				});
 			}
@@ -135,21 +133,29 @@ function moveScheduleDataToBackupDirectory(scheduleData, fn) {
 	}
 }
 
-// verifyBackupDirectoryPath(backupDataDirectoryPath);
-// verifyDataDirectoryPath(currentDataDirectoryPath);
+verifyDirectoryPath(backupDataDirectoryPath);
+verifyDirectoryPath(currentDataDirectoryPath);
 
-moveScheduleDataToReadDirectory(proTrackScheduleData, function(error, removeScheduleFile) {
-	if (error) {
-		console.log(error);
-	}
-	fs.unlink(proTrackScheduleData, function(error) {
-		if (error) {
-			console.log(error);
-		}
-		console.log('File removed!');
-	})
-});
+// moveScheduleDataFile(proTrackScheduleData, backupDataDirectoryPath, function(error, confirmation) {
+// 	if (error) {
+// 		console.log(error);
+// 	}
+// 		console.log('File removed.');
+// 	});
 
-export { moveScheduleDataToReadDirectory };
+// moveScheduleDataFile(proTrackScheduleData, currentDataDirectoryPath, function(error, removeScheduleFile) {
+// 	if (error) {
+// 		console.log(error);
+// 	}
+// 	fs.unlink(proTrackScheduleData, function(error) {
+// 		if (error) {
+// 			console.log(error);
+// 		}
+// 		console.log('File removed');
+// 	})
+// });
+
+
+export { moveScheduleDataFile };
 export { moveScheduleDataToBackupDirectory };
 export { getFileNames };
