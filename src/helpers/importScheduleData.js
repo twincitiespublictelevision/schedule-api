@@ -53,7 +53,7 @@ function getCurrentDate() {
 			mm = leadingZero(currentDate.getMonth() + 1),
 			dd = leadingZero(currentDate.getDate()),
 			yy = currentDate.getFullYear(),
-			formattedDateString = 'proTrackData-' + yy + mm + dd + '-' + hh + ':' + mi + '.xml';
+			formattedDateString = '-' + yy + mm + dd + '-' + hh + ':' + mi;
 
 	return formattedDateString;
 }
@@ -91,15 +91,16 @@ getFileNames(baseDirectory, function(error, files) {
 });
 
 // Move schedule data files to the read / current directory
-function moveScheduleDataToReadDirectory(scheduleData, fn) {
+function moveScheduleDataToReadDirectory(scheduleDataPath, fn) {
 	let currentDate = getCurrentDate();
+	let currentFile = path.parse(scheduleDataPath);
 
-	if (fs.existsSync(proTrackScheduleData) === true) {
-		fs.readFile(proTrackScheduleData, function(error, data) {
+	if (fs.existsSync(scheduleDataPath) === true) {
+		fs.readFile(scheduleDataPath, function(error, data) {
 			if (error) {
 				fn(error, undefined);
 			} else {
-				fs.writeFile(currentDataDirectoryPath + currentDate, data, function(error) {
+				fs.writeFile(currentDataDirectoryPath + currentFile.name + currentDate + currentFile.ext, data, function(error) {
 					if (error) {
 						fn(error, undefined);
 					} else {
@@ -137,17 +138,17 @@ function moveScheduleDataToBackupDirectory(scheduleData, fn) {
 // verifyBackupDirectoryPath(backupDataDirectoryPath);
 // verifyDataDirectoryPath(currentDataDirectoryPath);
 
-// moveScheduleDataToReadDirectory(proTrackScheduleData, function(error, removeScheduleFile) {
-// 	if (error) {
-// 		console.log(error);
-// 	}
-// 	fs.unlink(proTrackScheduleData, function(error) {
-// 		if (error) {
-// 			console.log(error);
-// 		}
-// 		console.log('File removed!');
-// 	})
-// });
+moveScheduleDataToReadDirectory(proTrackScheduleData, function(error, removeScheduleFile) {
+	if (error) {
+		console.log(error);
+	}
+	fs.unlink(proTrackScheduleData, function(error) {
+		if (error) {
+			console.log(error);
+		}
+		console.log('File removed!');
+	})
+});
 
 export { moveScheduleDataToReadDirectory };
 export { moveScheduleDataToBackupDirectory };
