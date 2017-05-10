@@ -26,28 +26,28 @@ const xml2jsParser = new xml2js.Parser({
 
 // working async version
 
-function jsonScheduleData(xml, fn) {
-	fs.readFile(xml, function(error, data) {
+function jsonScheduleData(xmlFile, fn) {
+	fs.readFile(xmlFile, function(error, data) {
 		if (error) {
 			// return [error, undefined];
 			fn(error, undefined);
 		} else {
 			// callback function to parse XML data to JSON
-			xml2jsParser.parseString(data, function(error, result) {
+			xml2jsParser.parseString(data, function(error, parseData) {
 				if (error) {
 					fn(error, undefined);
 				} else {
-					fn(undefined, result);
+					fn(undefined, parseData);
 				}
 			});	
 		}
 	});
 }
 
-jsonScheduleData(proTrackScheduleData, function(error, data) {
-	// Here is where we do something with the returned data / result
-	console.log(data);
-});
+// jsonScheduleData(proTrackScheduleData, function(error, data) {
+// 	// Here is where we do something with the returned data / result
+// 	console.log(data);
+// });
 
 // working synchronous version
 
