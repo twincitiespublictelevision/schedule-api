@@ -1,5 +1,6 @@
 import * as fs from 	'fs';
 import * as path from 'path';
+import * as util from 'util';
 
 const baseDirectory 						= (__dirname + '/../../data');
 const backupDataDirectoryPath 	= (__dirname + '/../../data/backupScheduleData/');
@@ -75,13 +76,40 @@ function getCurrentDate() {
 }
 
 /**
- * Get file names from a given directory
- * @param {String} directoryPath
- * @member {Array} joinedFilePaths
- * @returns {Array} - joinedFilePaths
+ * Save new JSON file in working directory for processing
+ * @param {String} sorceFilePath
+ * @param {Object} parseData - Return value of parsed file
+ * @returns {String} finalPath
  * @callback
  */
-function getFilePath(directoryPath, fn) {
+function saveParsedFile(xmlFile, parseData, fn) {
+	let currentDate = getCurrentDate(),
+			currentFile = path.parse(xmlFile),
+			finalPath		= currentDataDirectoryPath + currentDate + currentFile.name + '.json',
+			jsonString	= JSON.stringify(parseData);
+
+	if (jsonString !== undefined) {
+		fs.writeFile(finalPath, jsonString, function(error) {
+			if (error) {
+				fn(error, undefined);
+			} else {
+				console.log('Success! %s saved.', currentFile.name + currentFile.ext);
+				return finalPath;
+			}
+		});
+	}
+	fn(undefined, finalPath);
+}
+
+/**
+ * Get file names, paths from a given directory
+ * @param {String} directoryPath - Directory to read
+ * @param {String} fileType - Type of file to return
+ * @member {Array} joinedFilePaths
+ * @returns {Array} - joinedFilePaths - All files that matched fileType
+ * @callback
+ */
+function getFilePath(directoryPath, fileType, fn) {
 
 	fs.readdir(directoryPath, function(error, files) {
 		let joinedFilePath = [];
@@ -93,8 +121,10 @@ function getFilePath(directoryPath, fn) {
 				return path.join(directoryPath, file);
 			})
 			.filter(function(file) {
-				if (path.extname(file) === '.xml') {
+				if (path.extname(file) === fileType) {
 					return fs.statSync(file).isFile();
+				} else {
+					return console.log('Not an %s file, moving on.', fileType);
 				}
 			})
 			.forEach(function (file) {
@@ -207,10 +237,33 @@ function removeSingleFile(filePath, fn) {
 	});
 }
 
+/**
+ * Remove file from source location
+ * @param {Object} parseData - A JSON object to iterate / destructure
+ * @returns {Object} - Airing object ready for insertion to DB
+ * @callback
+ */
+//  function createAiringObject(parseData) {
+//  	let airings = {};
+
+// 	for (var series in parseData) {
+// 		if (parseData.hasOwnProperty(series)) {
+// 			// console.log(`parseData.${series} = ${parseData[series]}`);
+// 			console.log(util.inspect(`parseData.${series} = ${parseData[series]}`), { showHidden: false, depth: null });
+// 		}
+// 	}
+// }
+
+// for (let [key, value] of Object.entries(testObject)) {
+// 	console.log(key + ':' + value);
+// }
+
+
 export { createDirectoryPath };
 export { verifyFilePath };
 export { leadingZero };
 export { getCurrentDate };
+export { saveParsedFile };
 export { getFilePath };
 export { moveScheduleDataFileString };
 export { moveScheduleDataFileArray };
@@ -219,5 +272,6 @@ export { removeSingleFile };
 export { baseDirectory };
 export { backupDataDirectoryPath };
 export { currentDataDirectoryPath };
+export { createAiringObject };
 // export { createDirectoryPath, verifyFilePath, leadingZero, getCurrentDate, getFilePath, moveScheduleDataFileString, moveScheduleDataFileArray, removeFile, removeSingleFile};
 // export * from './importScheduleData.js';
