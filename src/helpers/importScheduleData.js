@@ -45,6 +45,26 @@ function verifyFilePath(filePath) {
 }
 
 /**
+ * Watch a given directory for changes
+ * @param {String} directoryPath - path to watch
+ * @return {Boolean}
+ */
+function watchDirectory(directoryPath) {
+	if (fs.existsSync(directoryPath) === true) {
+		console.log('Monitoring %s', directoryPath);
+		fs.watch(directoryPath, function(eventType) {
+			if (eventType === 'rename') {
+				console.log('A file arrived.');
+			}
+				console.log(eventType);
+		});
+		return true;
+	} else {
+		console.log('Not currently monitoring %s ', directoryPath + '.');
+	}
+}
+
+/**
  * Add leading 0 to integers less than 10,
  * Coerce number to string through concatenation
  * @param {Number} num
@@ -238,29 +258,35 @@ function removeSingleFile(filePath, fn) {
 }
 
 /**
- * Remove file from source location
- * @param {Object} parseData - A JSON object to iterate / destructure
- * @returns {Object} - Airing object ready for insertion to DB
- * @callback
+ * Traverse data structure using the map method, 
+ * retrieving the objects we want in the order we want along the way.
+ * The goal is to invert the parsed object, pulling the most nested
+ * bits of data out.
+ * @param {Object} data - An object to be traversed
+ * @returns {Array} - collectedData
  */
-//  function createAiringObject(parseData) {
-//  	let airings = {};
+function extractScheduleData(parseData) {
 
-// 	for (var series in parseData) {
-// 		if (parseData.hasOwnProperty(series)) {
-// 			// console.log(`parseData.${series} = ${parseData[series]}`);
-// 			console.log(util.inspect(`parseData.${series} = ${parseData[series]}`), { showHidden: false, depth: null });
-// 		}
-// 	}
-// }
-
-// for (let [key, value] of Object.entries(testObject)) {
-// 	console.log(key + ':' + value);
-// }
-
+	let full_data = parseData.schedule_data.series.map(series => {
+		let series_airings = series.episode.map(episode => {
+			let episode_airings;
+			if (episode.schedule.length && episode.schedule.length > 1) {
+				episode_airings = episode.schedule.map(schedule => {
+				return(series, episode, schedule);
+				});
+			} else {
+				episode_airings = [episode.schedule];
+			}
+			return episode_airings;
+		})
+		return [].concat.apply([], series_airings);
+	})
+	return [].concat.apply([], full_data);
+}
 
 export { createDirectoryPath };
 export { verifyFilePath };
+export { watchDirectory };
 export { leadingZero };
 export { getCurrentDate };
 export { saveParsedFile };
@@ -272,6 +298,4 @@ export { removeSingleFile };
 export { baseDirectory };
 export { backupDataDirectoryPath };
 export { currentDataDirectoryPath };
-export { createAiringObject };
-// export { createDirectoryPath, verifyFilePath, leadingZero, getCurrentDate, getFilePath, moveScheduleDataFileString, moveScheduleDataFileArray, removeFile, removeSingleFile};
-// export * from './importScheduleData.js';
+export { extractScheduleData };
