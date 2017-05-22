@@ -258,30 +258,103 @@ function removeSingleFile(filePath, fn) {
 }
 
 /**
- * Traverse data structure using the map method, 
+ * Model for the newly formatted schedule object
+ * @param {Array} series - A list of series from the parsed data
+ * @param {Array} episode - A list of episodes from the parsed data
+ * @param {Array} schedule - A list of schedules from the parsed data
+ * @returns {Object} scheduleObject - An newly formattted object
+ */
+function newScheduleObject(series, episode, schedule) {
+
+	let scheduleObject = {
+		schedule: {
+			schedule_channel: schedule.schedule_channel,
+			schedule_date: schedule.schedule_date,
+			schedule_duration: schedule.schedule_duration
+		},
+		episode: {
+			program_id: episode.program_id,
+			version_id: episode.version_id,
+			episode_title: episode.episode_title,
+			episode_number: episode.episode_number,
+			episode_desc: episode.episode_desc,
+			episode_url: episode.episode_url,
+			episode_language: episode.episode_language,
+			episode_dvi: episode.episode_dvi,
+			episode_stereo: episode.episode_stereo,
+			episode_hdtv: episode.episode_hdtv,
+			version_rating: episode.version_rating,
+			version_caption: episode.version_caption,
+			package_type: episode.package_type,
+			orig_broadcast_date: episode.orig_broadcast_date,
+			epi_genrelist_loc: {
+				genre: {
+					genrecd: episode.epi_genrelist_loc.genre.genrecd,
+					genretxt: episode.epi_genrelist_loc.genre.genrecd
+				}
+			}
+		},
+		series: {
+			series_id: series.series_id,
+			series_code: series.series_code,
+			series_title: series.series_title,
+			series_desc: series.series_desc,
+			series_url: series.series_url,
+			series_pgmtype: series.series_pgmtype,
+			series_genrelist_loc: {
+				genre: {
+					genrecd: series.series_genrelist_loc.genre.genrecd,
+					genretxt: series.series_genrelist_loc.genre.genrecd
+				}
+			}
+		}
+	};
+
+	if(episode.epi_genrelist_nat === null) {
+		scheduleObject.episode.epi_genrelist_nat = {
+			genre: {
+				genrecd: null,
+				genretxt: null
+			}
+		};
+	} else {
+		scheduleObject.episode.epi_genrelist_nat = {
+			genre: {
+				genrecd: episode.epi_genrelist_nat.genre.genrecd,
+				genretxt: episode.epi_genrelist_nat.genre.genretxt
+			}
+		}
+	}
+	return scheduleObject;
+}
+
+/**
+ * Traverse data structure using the map method,
  * retrieving the objects we want in the order we want along the way.
  * The goal is to invert the parsed object, pulling the most nested
  * bits of data out.
  * @param {Object} data - An object to be traversed
  * @returns {Array} - collectedData
  */
-function extractScheduleData(parseData) {
-
+function extractScheduleData(parseData, fn) {
+	let fullScheduleData = [];
 	let full_data = parseData.schedule_data.series.map(series => {
 		let series_airings = series.episode.map(episode => {
 			let episode_airings;
 			if (episode.schedule.length && episode.schedule.length > 1) {
 				episode_airings = episode.schedule.map(schedule => {
-				return(series, episode, schedule);
+				newScheduleObject(series, episode, schedule);
+				return newScheduleObject(series, episode, schedule);
 				});
 			} else {
-				episode_airings = [episode.schedule];
+				episode_airings = newScheduleObject(series, episode, episode.schedule);
 			}
 			return episode_airings;
 		})
 		return [].concat.apply([], series_airings);
 	})
-	return [].concat.apply([], full_data);
+	console.log(util.inspect(fullScheduleData.concat.apply([], full_data), {showHidden:false, depth:null}));
+	return fullScheduleData = fullScheduleData.concat.apply([], full_data);
 }
 
 export { createDirectoryPath };
