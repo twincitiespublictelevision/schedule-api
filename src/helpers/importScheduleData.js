@@ -260,94 +260,6 @@ function removeSingleFile(filePath, fn) {
 }
 
 /**
- * Model for the newly formatted schedule object
- * @param {Array} series - A list of series from the parsed data
- * @param {Array} episode - A list of episodes from the parsed data
- * @param {Array} schedule - A list of schedules from the parsed data
- * @returns {Object} scheduleObject - An newly formattted object
- */
-function newScheduleObject(series, episode, schedule) {
-
-	let scheduleObject = {
-		schedule: {
-			schedule_channel: schedule.schedule_channel,
-			schedule_date: schedule.schedule_date,
-			schedule_duration: schedule.schedule_duration
-		},
-		episode: {
-			program_id: episode.program_id,
-			version_id: episode.version_id,
-			episode_title: episode.episode_title,
-			episode_number: episode.episode_number,
-			episode_desc: episode.episode_desc,
-			episode_url: episode.episode_url,
-			episode_language: episode.episode_language,
-			episode_dvi: episode.episode_dvi,
-			episode_stereo: episode.episode_stereo,
-			episode_hdtv: episode.episode_hdtv,
-			version_rating: episode.version_rating,
-			version_caption: episode.version_caption,
-			package_type: episode.package_type,
-			orig_broadcast_date: episode.orig_broadcast_date,
-			epi_genrelist_loc: {
-				genre: {
-					genrecd: episode.epi_genrelist_loc.genre.genrecd,
-					genretxt: episode.epi_genrelist_loc.genre.genrecd
-				}
-			}
-		},
-		series: {
-			series_id: series.series_id,
-			series_code: series.series_code,
-			series_title: series.series_title,
-			series_desc: series.series_desc,
-			series_url: series.series_url,
-			series_pgmtype: series.series_pgmtype,
-			series_genrelist_loc: {
-				genre: {
-					genrecd: series.series_genrelist_loc.genre.genrecd,
-					genretxt: series.series_genrelist_loc.genre.genrecd
-				}
-			}
-		}
-	};
-
-	if (series.series_genrelist_loc === null) {
-		scheduleObject.episode.series_genrelist_loc = {
-			genre: {
-				genrecd: null,
-				genretxt: null
-			}
-		};
-	} else if (series.series_genrelist_loc && series.series_genrelist_loc.length === 1) {
-		scheduleObject.episode.series_genrelist_loc = {
-			genre: {
-				genrecd: series.series_genrelist_loc.genre.genrecd,
-				genretxt: series.series_genrelist_loc.genre.genrecd
-			}
-		};
-	} else if (series.series_genrelist_loc && series.series_genrelist_loc.length === 2) {
-		scheduleObject.episode.series_genrelist_loc[0] = {genre: { genrecd: series.series_genrelist_loc.genre.genrecd,	genretxt: series.series_genrelist_loc.genre.genrecd	}},
-		scheduleObject.episode.series_genrelist_loc[1] = {genre: { genrecd: series.series_genrelist_loc.genre.genrecd,	genretxt: series.series_genrelist_loc.genre.genrecd	}}
-	} else  if (episode.epi_genrelist_nat === null) {
-		scheduleObject.episode.epi_genrelist_nat = {
-			genre: {
-				genrecd: null,
-				genretxt: null
-			}
-		};
-	} else {
-		scheduleObject.episode.epi_genrelist_nat = {
-			genre: {
-				genrecd: episode.epi_genrelist_nat.genre.genrecd,
-				genretxt: episode.epi_genrelist_nat.genre.genretxt
-			}
-		}
-	}
-	return scheduleObject;
-}
-
-/**
  * Model for the newly formatted object that contains specific schedule info
  * @param {Array} schedule - A list of schedules from the parsed data
  * @returns {Object} singleScheduleObject - An newly formattted object
@@ -371,9 +283,9 @@ function scheduleObject(schedule) {
  * @returns {Object} singleEpisodeObject - An newly formattted object
  */
 function episodeObject(episode) {
-	
+
 	let episodeObject = {
-			
+
 		episode: {
 			program_id: episode.program_id,
 			version_id: episode.version_id,
@@ -422,7 +334,7 @@ function episodeObject(episode) {
  * @returns {Object} singleSeriesObject - An newly formattted object
  */
 function seriesObject(series) {
-	
+
 	let seriesObject = {
 
 		series: {
