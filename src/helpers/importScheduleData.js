@@ -240,6 +240,7 @@ function removeFile(sourceFilePath, fn) {
 			});
 		}
 	})
+	fn(undefined, sourceFinalPath);
 }
 
 /**
@@ -255,6 +256,7 @@ function removeSingleFile(filePath, fn) {
 		}
 			return console.log('%s removed.', filePath);
 	});
+	fn(undefined, finalPath);
 }
 
 /**
@@ -310,7 +312,24 @@ function newScheduleObject(series, episode, schedule) {
 		}
 	};
 
-	if(episode.epi_genrelist_nat === null) {
+	if (series.series_genrelist_loc === null) {
+		scheduleObject.episode.series_genrelist_loc = {
+			genre: {
+				genrecd: null,
+				genretxt: null
+			}
+		};
+	} else if (series.series_genrelist_loc && series.series_genrelist_loc.length === 1) {
+		scheduleObject.episode.series_genrelist_loc = {
+			genre: {
+				genrecd: series.series_genrelist_loc.genre.genrecd,
+				genretxt: series.series_genrelist_loc.genre.genrecd
+			}
+		};
+	} else if (series.series_genrelist_loc && series.series_genrelist_loc.length === 2) {
+		scheduleObject.episode.series_genrelist_loc[0] = {genre: { genrecd: series.series_genrelist_loc.genre.genrecd,	genretxt: series.series_genrelist_loc.genre.genrecd	}},
+		scheduleObject.episode.series_genrelist_loc[1] = {genre: { genrecd: series.series_genrelist_loc.genre.genrecd,	genretxt: series.series_genrelist_loc.genre.genrecd	}}
+	} else  if (episode.epi_genrelist_nat === null) {
 		scheduleObject.episode.epi_genrelist_nat = {
 			genre: {
 				genrecd: null,
@@ -329,6 +348,130 @@ function newScheduleObject(series, episode, schedule) {
 }
 
 /**
+ * Model for the newly formatted object that contains specific schedule info
+ * @param {Array} schedule - A list of schedules from the parsed data
+ * @returns {Object} singleScheduleObject - An newly formattted object
+ */
+function scheduleObject(schedule) {
+
+	let scheduleObject = {
+
+		schedule: {
+			schedule_channel: schedule.schedule_channel,
+			schedule_date: schedule.schedule_date,
+			schedule_duration: schedule.schedule_duration
+		}
+	}
+	return scheduleObject;
+}
+
+/**
+ * Model for the newly formatted object that contains specific episode info
+ * @param {Array} episode - A list of episodes from the parsed data
+ * @returns {Object} singleEpisodeObject - An newly formattted object
+ */
+function episodeObject(episode) {
+	
+	let episodeObject = {
+			
+		episode: {
+			program_id: episode.program_id,
+			version_id: episode.version_id,
+			episode_title: episode.episode_title,
+			episode_number: episode.episode_number,
+			episode_desc: episode.episode_desc,
+			episode_url: episode.episode_url,
+			episode_language: episode.episode_language,
+			episode_dvi: episode.episode_dvi,
+			episode_stereo: episode.episode_stereo,
+			episode_hdtv: episode.episode_hdtv,
+			version_rating: episode.version_rating,
+			version_caption: episode.version_caption,
+			package_type: episode.package_type,
+			orig_broadcast_date: episode.orig_broadcast_date,
+			epi_genrelist_loc: {
+				genre: {
+					genrecd: episode.epi_genrelist_loc.genre.genrecd,
+					genretxt: episode.epi_genrelist_loc.genre.genrecd
+				}
+			}
+		}
+	};
+
+	if (episode.epi_genrelist_nat === null) {
+		episodeObject.episode.epi_genrelist_nat = {
+			genre: {
+				genrecd: null,
+				genretxt: null
+			}
+		};
+	} else {
+		episodeObject.episode.epi_genrelist_nat = {
+			genre: {
+				genrecd: episode.epi_genrelist_nat.genre.genrecd,
+				genretxt: episode.epi_genrelist_nat.genre.genretxt
+			}
+		}
+	}
+	return  episodeObject;
+}
+
+/**
+ * Model for the newly formatted object that contains specific series info
+ * @param {Array} series - A list of series from the parsed data
+ * @returns {Object} singleSeriesObject - An newly formattted object
+ */
+function seriesObject(series) {
+	
+	let seriesObject = {
+
+		series: {
+			series_id: series.series_id,
+			series_code: series.series_code,
+			series_title: series.series_title,
+			series_desc: series.series_desc,
+			series_url: series.series_url,
+			series_pgmtype: series.series_pgmtype
+		}
+	};
+
+	if (series.series_genrelist_loc === null) {
+		seriesObject.series.series_genrelist_loc = {
+			genre: {
+				genrecd: null,
+				genretxt: null
+			}
+		};
+	} else if (series.series_genrelist_loc.genre.length === 1) {
+		seriesObject.series.series_genrelist_loc = {
+			genre: {
+				genrecd: series.series_genrelist_loc.genre.genrecd,
+				genretxt: series.series_genrelist_loc.genre.genrecd
+			}
+		};
+	} else if (series.series_genrelist_loc.genre.length === 2) {
+		seriesObject.series.series_genrelist_loc = {
+			genre: [{
+				genrecd: series.series_genrelist_loc.genre[0].genrecd,
+				genretxt: series.series_genrelist_loc.genre[0].genretxt
+			},
+			{
+				genrecd: series.series_genrelist_loc.genre[1].genrecd,
+				genretxt: series.series_genrelist_loc.genre[1].genretxt
+			}]
+		};
+	} else {
+		seriesObject.series.series_genrelist_loc = {
+			genre: {
+				genrecd: null,
+				genretxt: null
+			}
+		};
+	}
+	return seriesObject;
+}
+
+/**
  * Traverse data structure using the map method,
  * retrieving the objects we want in the order we want along the way.
  * The goal is to invert the parsed object, pulling the most nested
@@ -336,15 +479,18 @@ function newScheduleObject(series, episode, schedule) {
  * @param {Object} data - An object to be traversed
  * @returns {Array} - collectedData
  */
-function extractScheduleData(parseData, fn) {
+function extractScheduleData(parseData) {
 	let fullScheduleData = [];
 	let full_data = parseData.schedule_data.series.map(series => {
 		let series_airings = series.episode.map(episode => {
 			let episode_airings;
 			if (episode.schedule.length && episode.schedule.length > 1) {
 				episode_airings = episode.schedule.map(schedule => {
-				newScheduleObject(series, episode, schedule);
-				return newScheduleObject(series, episode, schedule);
+					let finalScheduleObject = {};
+					let newScheduleObject = scheduleObject(schedule);
+					let newEpisodeObject = episodeObject(episode);
+					let newSeriesObject = seriesObject(series);
+					return Object.assign(finalScheduleObject, newScheduleObject, newEpisodeObject, newSeriesObject);
 				});
 			} else {
 				episode_airings = newScheduleObject(series, episode, episode.schedule);
@@ -353,9 +499,10 @@ function extractScheduleData(parseData, fn) {
 		})
 		return [].concat.apply([], series_airings);
 	})
-	console.log(util.inspect(fullScheduleData.concat.apply([], full_data), {showHidden:false, depth:null}));
+	// console.log(util.inspect(fullScheduleData.concat.apply([], full_data), {showHidden:false, depth:null}));
 	return fullScheduleData = fullScheduleData.concat.apply([], full_data);
 }
+
 
 export { createDirectoryPath };
 export { verifyFilePath };
