@@ -59,3 +59,5 @@ export default class dataStore {
 		});
 	}
 }
+
+export { mongoURI, mongoDB };
