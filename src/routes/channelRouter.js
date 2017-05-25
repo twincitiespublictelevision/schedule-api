@@ -1,4 +1,9 @@
-import airings from '../../data/channels';
+import mongodb from 'mongodb';
+import {
+	mongoDB,
+	findAll
+} from '../database';
+
 import { Router } from 'express';
 
 export default class ChannelRouter {
@@ -15,7 +20,14 @@ export default class ChannelRouter {
 	 * Return all data in channels
 	 */
 	getAll(request, response) {
-		response.status(200).json(airings);
+		let scheduleCollection = mongoDB.collection('scheduleData');
+
+		scheduleCollection.find().toArray(function(error, docs) {
+			if (error) {
+				console.log(error);
+			}
+			response.status(200).json(docs);
+		});
 	}
 
 	/**
