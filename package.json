@@ -30,6 +30,7 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-sourcemaps": "^2.6.0",
+    "mongodb": "^2.2.27",
     "mongoose": "^4.9.5",
     "morgan": "^1.8.1",
     "xml2js": "^0.4.17",
