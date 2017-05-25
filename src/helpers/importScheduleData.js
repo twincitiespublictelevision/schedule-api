@@ -260,6 +260,27 @@ function removeSingleFile(filePath, fn) {
 }
 
 /**
+ * Check for a list of genres and ensure proper formatting
+ * @param {*} genreInput - A list of schedules from the parsed data
+ * @returns {Object} singleScheduleObject - An newly formattted object
+ */
+function convertGenres(genreInput) {
+	let newGenreList = [];
+
+	if (genreInput && genreInput.genre) {
+		let genres = genreInput.genre.length ? genreInput.genre : [genreInput.genre];
+
+		genres.forEach(function(genre) {
+			if (genre.genrecd && genre.genretxt) {
+				newGenreList.push(genre);
+			}
+		});
+	}
+	return newGenreList;
+}
+
+
+/**
  * Model for the newly formatted object that contains specific schedule info
  * @param {Array} schedule - A list of schedules from the parsed data
  * @returns {Object} singleScheduleObject - An newly formattted object
@@ -310,21 +331,9 @@ function episodeObject(episode) {
 		}
 	};
 
-	if (episode.epi_genrelist_nat === null) {
-		episodeObject.episode.epi_genrelist_nat = {
-			genre: {
-				genrecd: null,
-				genretxt: null
-			}
-		};
-	} else {
-		episodeObject.episode.epi_genrelist_nat = {
-			genre: {
-				genrecd: episode.epi_genrelist_nat.genre.genrecd,
-				genretxt: episode.epi_genrelist_nat.genre.genretxt
-			}
-		}
-	}
+	episodeObject.episode.epi_genrelist_loc = convertGenres(episode.epi_genrelist_loc);
+	episodeObject.episode.epi_genrelist_nat = convertGenres(episode.epi_genrelist_nat);
+
 	return  episodeObject;
 }
 
@@ -347,39 +356,8 @@ function seriesObject(series) {
 		}
 	};
 
-	if (series.series_genrelist_loc === null) {
-		seriesObject.series.series_genrelist_loc = {
-			genre: {
-				genrecd: null,
-				genretxt: null
-			}
-		};
-	} else if (series.series_genrelist_loc.genre.length === 1) {
-		seriesObject.series.series_genrelist_loc = {
-			genre: {
-				genrecd: series.series_genrelist_loc.genre.genrecd,
-				genretxt: series.series_genrelist_loc.genre.genrecd
-			}
-		};
-	} else if (series.series_genrelist_loc.genre.length === 2) {
-		seriesObject.series.series_genrelist_loc = {
-			genre: [{
-				genrecd: series.series_genrelist_loc.genre[0].genrecd,
-				genretxt: series.series_genrelist_loc.genre[0].genretxt
-			},
-			{
-				genrecd: series.series_genrelist_loc.genre[1].genrecd,
-				genretxt: series.series_genrelist_loc.genre[1].genretxt
-			}]
-		};
-	} else {
-		seriesObject.series.series_genrelist_loc = {
-			genre: {
-				genrecd: null,
-				genretxt: null
-			}
-		};
-	}
+	seriesObject.series.series_genrelist_loc = convertGenres(series.series_genrelist_loc);
+
 	return seriesObject;
 }
 
@@ -392,27 +370,22 @@ function seriesObject(series) {
  * @returns {Array} - collectedData
  */
 function extractScheduleData(parseData) {
-	let fullScheduleData = [];
 	let full_data = parseData.schedule_data.series.map(series => {
-		let series_airings = series.episode.map(episode => {
-			let episode_airings;
-			if (episode.schedule.length && episode.schedule.length > 1) {
-				episode_airings = episode.schedule.map(schedule => {
+		let episodes = series.episode.length ? series.episode : [series.episode];
+		let series_airings = episodes.map(episode => {
+			let schedules = episode.schedule.length ? episode.schedule : [episode.schedule];
+				return schedules.map(schedule => {
 					let finalScheduleObject = {};
 					let newScheduleObject = scheduleObject(schedule);
 					let newEpisodeObject = episodeObject(episode);
 					let newSeriesObject = seriesObject(series);
-					return Object.assign(finalScheduleObject, newScheduleObject, newEpisodeObject, newSeriesObject);
+					return Object.assign({}, newScheduleObject, newEpisodeObject, newSeriesObject);
 				});
-			} else {
-				episode_airings = newScheduleObject(series, episode, episode.schedule);
-			}
-			return episode_airings;
 		})
 		return [].concat.apply([], series_airings);
 	})
 	// console.log(util.inspect(fullScheduleData.concat.apply([], full_data), {showHidden:false, depth:null}));
-	return fullScheduleData = fullScheduleData.concat.apply([], full_data);
+	return [].concat.apply([], full_data);
 }
 
 
