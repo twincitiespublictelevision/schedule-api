@@ -16,7 +16,7 @@ node_modules
 # Environment Config
 
 # Environment Credentials
-.env
+*.env
 .eslintrc
 
 # Databases, Stores
