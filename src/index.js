@@ -2,6 +2,7 @@
 
 import * as http from 'http';
 import api from './api';
+import { config } from 'dotenv';
 import {
 	initialize,
 	connect
@@ -9,8 +10,12 @@ import {
 
 const app = new api();
 const DEFAULT_PORT = 3000;
-const port = normalizePort(process.env.PORT);
+const port = normalizePort(process.env.SERVER_PORT);
 const server = http.createServer(app.express);
+
+// Evnironment Variables
+
+config();
 
 // DB Connection
 
