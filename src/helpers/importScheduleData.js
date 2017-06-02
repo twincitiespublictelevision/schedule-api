@@ -19,7 +19,7 @@ function createDirectoryPath(directoryPath) {
 		return existsConfirm;
 	} else {
 		fs.mkdir(directoryPath, function(error) {
-			var createdConfirm = '%s directory created.', directoryPath;
+			let createdConfirm = '%s directory created.', directoryPath;
 
 			if (error) {
 				console.log(error);
@@ -261,7 +261,7 @@ function removeSingleFile(filePath, fn) {
 
 /**
  * Check for a list of genres and ensure proper formatting
- * @param {*} genreInput - A list of schedules from the parsed data
+ * @param {(?Array|?Object)} genreInput - A list of schedules from the parsed data
  * @returns {Object} singleScheduleObject - An newly formattted object
  */
 function convertGenres(genreInput) {
@@ -278,7 +278,6 @@ function convertGenres(genreInput) {
 	}
 	return newGenreList;
 }
-
 
 /**
  * Model for the newly formatted object that contains specific schedule info
@@ -389,18 +388,20 @@ function extractScheduleData(parseData) {
 }
 
 
-export { createDirectoryPath };
-export { verifyFilePath };
-export { watchDirectory };
-export { leadingZero };
-export { getCurrentDate };
-export { saveParsedFile };
-export { getFilePath };
-export { moveScheduleDataFileString };
-export { moveScheduleDataFileArray };
-export { removeFile };
-export { removeSingleFile };
-export { baseDirectory };
-export { backupDataDirectoryPath };
-export { currentDataDirectoryPath };
-export { extractScheduleData };
+export {
+	createDirectoryPath,
+	verifyFilePath,
+	watchDirectory,
+	leadingZero,
+	getCurrentDate,
+	saveParsedFile,
+	getFilePath,
+	moveScheduleDataFileString,
+	moveScheduleDataFileArray,
+	removeFile,
+	removeSingleFile,
+	baseDirectory,
+	backupDataDirectoryPath,
+	currentDataDirectoryPath,
+	extractScheduleData
+};
