@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test": "jest",
+    "debug": "DEBUG=express:* node build/index.js",
     "start": "node build/index.js"
   },
   "jest": {
@@ -17,7 +18,7 @@
     }
   },
   "author": "TPT",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "jest": "^19.0.2",
     "supertest": "^3.0.0"
