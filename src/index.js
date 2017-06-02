@@ -2,20 +2,17 @@
 
 import * as http from 'http';
 import api from './api';
-import { config } from 'dotenv';
 import {
 	initialize,
 	connect
 } from './database';
 
-const app = new api();
+// App Constants
+
+const app = new Api();
 const DEFAULT_PORT = 3000;
 const port = normalizePort(process.env.SERVER_PORT);
 const server = http.createServer(app.express);
-
-// Evnironment Variables
-
-config();
 
 // DB Connection
 
@@ -31,13 +28,20 @@ server.on('listening', onListening);
 function normalizePort(val) {
 	let port = (typeof val === 'string') ? parseInt(val, 10) : val;
 
-	if (port && isNaN(port)) return port;
-	else if (port >= 0) return port;
-	else return DEFAULT_PORT;
+	if (port && isNaN(port)) {
+		return port;
+	} else if (port >= 0) {
+			return port;
+	} else {
+			return DEFAULT_PORT;
+	}
 }
 
 function onError(error) {
-	if (error.syscall !== 'listen') throw error;
+	if (error.syscall !== 'listen') {
+		throw error;
+	}
+
 	let bind = (typeof port === 'string') ? `Pipe ${port}` : `Port ${port.toString()}`;
 
 	switch (error.code) {
