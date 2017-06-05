@@ -20,6 +20,7 @@
   "author": "TPT",
   "license": "Apache-2.0",
   "devDependencies": {
+    "dotenv": "^4.0.0",
     "jest": "^19.0.2",
     "supertest": "^3.0.0"
   },
@@ -27,7 +28,6 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.4.0",
     "body-parser": "^1.17.1",
-    "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
