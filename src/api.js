@@ -1,13 +1,9 @@
-import { config } from 'dotenv';
+
 import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import * as fs from 'fs';
 import ChannelRouter from './routes/channelRouter';
-
-// Load Environment Variables
-
-config();
 
 const serverLogsPath = process.env.ACCESS_LOG;
 const accessLogStream = fs.createWriteStream(serverLogsPath, {flags: 'a'});
