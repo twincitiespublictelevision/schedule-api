@@ -7,25 +7,16 @@ const backupDataDirectoryPath 	= (__dirname + '/../../data/backupScheduleData/')
 const currentDataDirectoryPath 	= (__dirname + '/../../data/currentScheduleData/');
 
 /**
- * Verify a given directory path exists,
+ * Verify a given directory path exists.
  * If not, create directory
  * @param {String} directoryPath - path to verify or create
  * @return
  */
 function createDirectoryPath(directoryPath) {
-	var existsConfirm = '%s directory already exists.', directoryPath;
-
-	if (fs.existsSync(directoryPath) === true) {
-		return existsConfirm;
+	if (verifyFilePath(directoryPath) === true) {
+		console.log(`That directory already exists, the path is, ${directoryPath}`);
 	} else {
-		fs.mkdir(directoryPath, function(error) {
-			let createdConfirm = '%s directory created.', directoryPath;
-
-			if (error) {
-				console.log(error);
-			}
-			return createdConfirm;
-		});
+		createDirectory(directoryPath);
 	}
 }
 
@@ -36,10 +27,40 @@ function createDirectoryPath(directoryPath) {
  */
 function verifyFilePath(filePath) {
 	if (fs.existsSync(filePath) === true) {
-		console.log('%s file exists.', filePath);
+		// console.log('%s file exists.', filePath);
 		return true;
 	} else {
-		console.log('%s file does not exist!', filePath);
+		// console.log('%s file does not exist!', filePath);
+		return false;
+	}
+}
+
+/**
+ * Create a directory at the given path,
+ * @param {String} directoryPath - path of directory to create.
+ * @return {Boolean}
+ */
+function createDirectory(directoryPath) {
+	fs.mkdir(directoryPath, function(error) {
+		if (error) {
+			console.log(error);
+		}
+		return console.log(`Created directory, the path is, ${directoryPath}`);
+	});
+}
+
+/**
+ * Starts watching a given directory if it exists.
+ * @param {String} directoryPath - path to watch
+ * @return {Boolean}
+ */
+function beginWatchingDirectory(directoryPath) {
+	if (verifyFilePath(directoryPath) === true) {
+		console.log(`Now watching, ${directoryPath}.`);
+		monitorDirectory(directoryPath);
+		return true
+	} else {
+		console.log(`Not currently monitoring, ${directoryPath}.`);
 		return false;
 	}
 }
@@ -49,19 +70,14 @@ function verifyFilePath(filePath) {
  * @param {String} directoryPath - path to watch
  * @return {Boolean}
  */
-function watchDirectory(directoryPath) {
-	if (fs.existsSync(directoryPath) === true) {
-		console.log('Monitoring %s', directoryPath);
-		fs.watch(directoryPath, function(eventType) {
-			if (eventType === 'rename') {
-				console.log('A file arrived.');
-			}
-				console.log(eventType);
-		});
-		return true;
-	} else {
-		console.log('Not currently monitoring %s ', directoryPath + '.');
-	}
+function monitorDirectory(directoryPath) {
+	fs.watch(directoryPath, function(eventType, filename) {
+		if (eventType === 'rename' || 'change') {
+			console.log(`New event decteced, ${eventType} on ${filename}.`);
+		} else {
+			console.log('Something happened in the watched directory...');
+		}
+	});
 }
 
 /**
@@ -129,7 +145,53 @@ function saveParsedFile(xmlFile, parseData, fn) {
  * @returns {Array} - joinedFilePaths - All files that matched fileType
  * @callback
  */
-function getFilePath(directoryPath, fileType, fn) {
+// function getFilePath(directoryPath, fileType, fn) {
+
+// 	fs.readdir(directoryPath, function(error, files) {
+// 		let joinedFilePath = [];
+
+// 		if (error) {
+// 			fn(error, undefined);
+// 		} else {
+// 			files.map(function(file) {
+// 				return path.join(directoryPath, file);
+// 			})
+// 			.filter(function(file) {
+// 				if (path.extname(file) === fileType) {
+// 					return fs.statSync(file).isFile();
+// 				} else {
+// 					return console.log('Not an %s file, moving on.', fileType);
+// 				}
+// 			})
+// 			.forEach(function (file) {
+// 				return joinedFilePath.push(file);
+// 			});
+// 		}
+// 		return fn(undefined, joinedFilePath);
+// 	});
+// }
+
+// function getFilePaths(directoryPath, fileType) {
+// 	var joinedFilePath = getAllDirectoryFiles(directoryPath);
+
+// 	joinedFilePath.map(function(file) {
+// 		return path.join(directoryPath, file);
+// 	})
+// 	.filter(function(file) {
+// 		if (getFileType(file) === fileType) {
+// 			return verifyItemIsAFile(file);
+// 		} else {
+// 			return console.log(`Item is not a ${fileType} file, moving on.`);
+// 		}
+// 	})
+// 	.forEach(function (file) {
+// 		return joinedFilePath.push(file);
+// 	});
+// 	console.log(joinedFilePath);
+// 	return joinedFilePath;
+// }
+
+function getFilePaths(directoryPath, fileType, fn) {
 
 	fs.readdir(directoryPath, function(error, files) {
 		let joinedFilePath = [];
@@ -141,18 +203,51 @@ function getFilePath(directoryPath, fileType, fn) {
 				return path.join(directoryPath, file);
 			})
 			.filter(function(file) {
-				if (path.extname(file) === fileType) {
-					return fs.statSync(file).isFile();
+				if (getFileType(file) === fileType) {
+					return verifyItemIsAFile(file);
 				} else {
-					return console.log('Not an %s file, moving on.', fileType);
+					return console.log(`Item is not a ${fileType} file, moving on.`);
 				}
 			})
 			.forEach(function (file) {
 				return joinedFilePath.push(file);
 			});
 		}
+		console.log(joinedFilePath);
 		return fn(undefined, joinedFilePath);
 	});
+}
+
+// function getAllDirectoryFiles(directoryPath) {
+// 	fs.readdir(directoryPath, function(error, files) {
+// 		console.log()
+// 		// let joinedFilePath = [];
+// 		if (error) {
+// 			console.log(error);
+// 			// fn (error, undefined);
+// 		} else {
+// 			// console.log(files);
+// 			return files;
+// 		}
+// 	});
+// }
+
+/**
+ * Verify a given item in the directory is a file.
+ * @param {String} file
+ * @returns {Boolean}
+ */
+function verifyItemIsAFile(file) {
+	return fs.statSync(file).isFile();
+}
+
+/**
+ * Returns the file extension of a given file
+ * @param {String} sorceFilePath
+ * @returns {String} - Returns a string representing the file extension
+ */
+function getFileType(file) {
+	return path.extname(file);
 }
 
 /**
@@ -391,11 +486,10 @@ function extractScheduleData(parseData) {
 export {
 	createDirectoryPath,
 	verifyFilePath,
-	watchDirectory,
+	beginWatchingDirectory,
 	leadingZero,
 	getCurrentDate,
 	saveParsedFile,
-	getFilePath,
 	moveScheduleDataFileString,
 	moveScheduleDataFileArray,
 	removeFile,
@@ -403,5 +497,9 @@ export {
 	baseDirectory,
 	backupDataDirectoryPath,
 	currentDataDirectoryPath,
-	extractScheduleData
+	extractScheduleData,
+	getFileType,
+	// getAllDirectoryFiles,
+	getFilePaths,
+	verifyItemIsAFile
 };
