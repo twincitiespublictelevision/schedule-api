@@ -1,7 +1,7 @@
 'use strict'
 
 import * as http from 'http';
-import api from './api';
+import Api from './api';
 import {
 	initialize,
 	connect
