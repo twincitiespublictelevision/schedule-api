@@ -27,10 +27,8 @@ function createDirectoryPath(directoryPath) {
  */
 function verifyFilePath(filePath) {
 	if (fs.existsSync(filePath) === true) {
-		// console.log('%s file exists.', filePath);
 		return true;
 	} else {
-		// console.log('%s file does not exist!', filePath);
 		return false;
 	}
 }
@@ -103,10 +101,11 @@ function getCurrentDate() {
 	let currentDate = new Date(),
 			HH 		= leadingZero(currentDate.getHours()),
 			mi 		= leadingZero(currentDate.getMinutes()),
+			ms 		= leadingZero(currentDate.getMilliseconds()),
 			MM 		= leadingZero(currentDate.getMonth() + 1),
 			DD 		= leadingZero(currentDate.getDate()),
 			YYYY 	= currentDate.getFullYear(),
-			formattedDateString = YYYY + MM + DD + '_' + HH + ':' + mi + '_';
+			formattedDateString = `${YYYY}${MM}${DD}_${HH}\u2236${mi}\u2236${ms}_`;
 
 	return formattedDateString;
 }
@@ -145,32 +144,6 @@ function saveParsedFile(xmlFile, parseData, fn) {
  * @returns {Array} - joinedFilePaths - All files that matched fileType
  * @callback
  */
-// function getFilePath(directoryPath, fileType, fn) {
-
-// 	fs.readdir(directoryPath, function(error, files) {
-// 		let joinedFilePath = [];
-
-// 		if (error) {
-// 			fn(error, undefined);
-// 		} else {
-// 			files.map(function(file) {
-// 				return path.join(directoryPath, file);
-// 			})
-// 			.filter(function(file) {
-// 				if (path.extname(file) === fileType) {
-// 					return fs.statSync(file).isFile();
-// 				} else {
-// 					return console.log('Not an %s file, moving on.', fileType);
-// 				}
-// 			})
-// 			.forEach(function (file) {
-// 				return joinedFilePath.push(file);
-// 			});
-// 		}
-// 		return fn(undefined, joinedFilePath);
-// 	});
-// }
-
 // function getFilePaths(directoryPath, fileType) {
 // 	var joinedFilePath = getAllDirectoryFiles(directoryPath);
 
@@ -191,9 +164,48 @@ function saveParsedFile(xmlFile, parseData, fn) {
 // 	return joinedFilePath;
 // }
 
-function getFilePaths(directoryPath, fileType, fn) {
 
-	fs.readdir(directoryPath, function(error, files) {
+// function getFilePaths(directoryPath, readDirectory) {
+// 	let filePaths = readDirectory(directoryPath);
+// 	let joinedFilePath = [];
+
+// 	filePaths.map(function(file) {
+// 		joinedFilePath.push(path.join(directoryPath, file));
+// 	});
+// 	// console.log(joinedFilePath);
+// 	return joinedFilePath;
+// }
+
+// function getFilePaths(directoryPath, readDirectory, fn) {
+
+// 	readDirectory(directoryPath, function(error, files) {
+// 	let joinedFilePath = [];
+
+// 		if (error) {
+// 			fn(error, undefined);
+// 		} else {
+// 			files.map(function(file) {
+// 				joinedFilePath.push(path.join(directoryPath, file));
+// 			});
+// 			console.log(joinedFilePath);
+// 			return joinedFilePath;
+// 		}
+// 	});
+// }
+
+function filterFilePaths(filePaths, fileType, getFileType, verifyItemIsAFile) {
+	var filteredFilePaths = filePaths.filter(function(file) {
+		if (getFileType(file) === fileType) {
+			return verifyItemIsAFile(file)
+		} else {
+			console.log(`Item is not a ${fileType} file, moving on.`);
+		}
+	});
+}
+
+function getFilePaths(directoryPath, fileType, readDirectory, fn) {
+	
+	readDirectory(directoryPath, function(error, files) {
 		let joinedFilePath = [];
 
 		if (error) {
@@ -218,7 +230,7 @@ function getFilePaths(directoryPath, fileType, fn) {
 	});
 }
 
-// function getAllDirectoryFiles(directoryPath) {
+// function getAllDirectoryFiles(directoryPath, fn) {
 // 	fs.readdir(directoryPath, function(error, files) {
 // 		console.log()
 // 		// let joinedFilePath = [];
@@ -304,7 +316,6 @@ function moveScheduleDataFileArray(sourceFilePath, destinationPath, fn) {
 							fn(error, undefined);
 						} else {
 							console.log('Success! %s moved to %s.', path.basename(filePath), destinationPath);
-							console.log(filesMoved);
 							return filesMoved.push(filePath);
 						}
 					});
@@ -316,26 +327,55 @@ function moveScheduleDataFileArray(sourceFilePath, destinationPath, fn) {
 }
 
 /**
+ * Copy file from source to destination
+ * @param {Array} sorceFilePath - An array of strings to be moved
+ * @param {String || Array} destinationPath
+ * @returns
+ * @callback
+ */
+function moveRawScheduleDataFile(sourceFilePath, destinationPath, fn) {
+	let currentDate = getCurrentDate(),
+			filesMoved 	= [];
+
+	destinationPath.forEach(function(destPath) {	
+		sourceFilePath.forEach(function(filePath) {
+			fs.readFile(filePath, function(error, data) {
+				if (error) {
+					fn(error, undefined);
+				} else {
+					fs.writeFile(destPath + currentDate + path.basename(filePath), data, function(error) {
+						if (error) {
+							fn(error, undefined);
+						} else {
+							console.log('Success! %s moved to %s.', path.basename(filePath), destPath);
+							filesMoved.push(filePath);
+						}
+						return filesMoved;
+					});
+					fn(undefined, filesMoved);
+				}
+			});
+		});
+	});
+	return sourceFilePath;
+}
+
+/**
  * Remove file from source location
  * @param {Array} sorceFilePath - An array of strings to be removed
  * @returns {String} - If all files removed, confirmation message
  * @callback
  */
 function removeFile(sourceFilePath, fn) {
-	if (error) {
-		console.log(error);
-	}
-		sourceFilePath.forEach(function(filePath) {
-			if (fs.existsSync(sourceFilePath) === true) {
-				fs.unlink(sourceFilePath, function(error) {
-					if (error) {
-					console.log(error);
-				}
-					return console.log('%s removed.', sourceFilePath);
-			});
-		}
-	})
-	fn(undefined, sourceFinalPath);
+	sourceFilePath.forEach(function(filePath) {
+		fs.unlink(filePath, function(error) {
+			if (error) {
+			console.log(error);
+			}
+			return console.log(`Removed ${filePath}.`);
+		});
+	});
+	fn(undefined, sourceFilePath);
 }
 
 /**
@@ -491,6 +531,7 @@ export {
 	getCurrentDate,
 	saveParsedFile,
 	moveScheduleDataFileString,
+	moveRawScheduleDataFile,
 	moveScheduleDataFileArray,
 	removeFile,
 	removeSingleFile,
@@ -499,7 +540,7 @@ export {
 	currentDataDirectoryPath,
 	extractScheduleData,
 	getFileType,
-	// getAllDirectoryFiles,
+	filterFilePaths,
 	getFilePaths,
 	verifyItemIsAFile
 };
