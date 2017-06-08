@@ -37,23 +37,6 @@ createDirectoryPath(process.env.WATCH_DIR);
 
 beginWatchingDirectory(process.env.WATCH_DIR);
 
-getFilePaths(process.env.WATCH_DIR, '.xml', fs.readdir, function(error, joinedFilePaths) {
-	if (error) {
-		console.log(error)
-	} else {
-		moveRawScheduleDataFile(joinedFilePaths, [process.env.BACKUP_DIR, process.env.WORKING_DIR], function(error, sourceFilePath) {
-			if (error) {
-				console.log(error)
-			}
-		});
-		removeFile(joinedFilePaths, function(error) {
-			if (error) {
-				console.log(error);
-			}
-		});
-	}
-});
-
 /*
 
 verify origination directory exists
