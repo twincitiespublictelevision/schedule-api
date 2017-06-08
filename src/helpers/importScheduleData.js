@@ -71,6 +71,7 @@ function beginWatchingDirectory(directoryPath) {
 function monitorDirectory(directoryPath) {
 	fs.watch(directoryPath, function(eventType, filename) {
 		if (eventType === 'rename' || 'change') {
+			process.send({start: true});
 			console.log(`New event decteced, ${eventType} on ${filename}.`);
 		} else {
 			console.log('Something happened in the watched directory...');
