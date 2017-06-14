@@ -51,6 +51,16 @@ function removeAllInsert(mongoDB, data, callback) {
 	});
 }
 
+function removeAll(mongoDB, data, callback) {
+	let scheduleCollection = mongoDB.collection('scheudleData');
+
+	scheduleCollection.remove({}, function(error) {
+		if (error) {
+			console.log(error);
+		}
+	});
+}
+
 function findAll(fn) {
 	let scheduleCollection = mongoDB.collection('scheduleData');
 
@@ -70,5 +80,6 @@ export {
 	singleInsert,
 	multipleInsert,
 	removeAllInsert,
+	removeAll,
 	findAll
 };
