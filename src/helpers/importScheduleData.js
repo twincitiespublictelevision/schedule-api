@@ -70,11 +70,14 @@ function beginWatchingDirectory(directoryPath) {
  */
 function monitorDirectory(directoryPath) {
 	fs.watch(directoryPath, function(eventType, filename) {
-		if (eventType === 'rename' || 'change') {
+		if (eventType === 'rename' &&
+				getFileType(filename) === '.xml' &&
+				verifyFilePath(directoryPath+'/'+filename) === true) {
+
 			process.send({start: true});
-			console.log(`New event decteced, ${eventType} on ${filename}.`);
+			console.log(`New event detected, ${eventType} on ${filename}.`);
 		} else {
-			console.log('Something happened in the watched directory...');
+			console.log(`That file, ${filename}, has been removed. No action taken.`);
 		}
 	});
 }
@@ -141,73 +144,14 @@ function saveParsedFile(xmlFile, parseData, fn) {
  * Get file names, paths from a given directory
  * @param {String} directoryPath - Directory to read
  * @param {String} fileType - Type of file to return
- * @member {Array} joinedFilePaths
+ * @param {Function} readDictory - Function that reads a directory path
  * @returns {Array} - joinedFilePaths - All files that matched fileType
  * @callback
  */
-// function getFilePaths(directoryPath, fileType) {
-// 	var joinedFilePath = getAllDirectoryFiles(directoryPath);
-
-// 	joinedFilePath.map(function(file) {
-// 		return path.join(directoryPath, file);
-// 	})
-// 	.filter(function(file) {
-// 		if (getFileType(file) === fileType) {
-// 			return verifyItemIsAFile(file);
-// 		} else {
-// 			return console.log(`Item is not a ${fileType} file, moving on.`);
-// 		}
-// 	})
-// 	.forEach(function (file) {
-// 		return joinedFilePath.push(file);
-// 	});
-// 	console.log(joinedFilePath);
-// 	return joinedFilePath;
-// }
-
-
-// function getFilePaths(directoryPath, readDirectory) {
-// 	let filePaths = readDirectory(directoryPath);
-// 	let joinedFilePath = [];
-
-// 	filePaths.map(function(file) {
-// 		joinedFilePath.push(path.join(directoryPath, file));
-// 	});
-// 	// console.log(joinedFilePath);
-// 	return joinedFilePath;
-// }
-
-// function getFilePaths(directoryPath, readDirectory, fn) {
-
-// 	readDirectory(directoryPath, function(error, files) {
-// 	let joinedFilePath = [];
-
-// 		if (error) {
-// 			fn(error, undefined);
-// 		} else {
-// 			files.map(function(file) {
-// 				joinedFilePath.push(path.join(directoryPath, file));
-// 			});
-// 			console.log(joinedFilePath);
-// 			return joinedFilePath;
-// 		}
-// 	});
-// }
-
-function filterFilePaths(filePaths, fileType, getFileType, verifyItemIsAFile) {
-	var filteredFilePaths = filePaths.filter(function(file) {
-		if (getFileType(file) === fileType) {
-			return verifyItemIsAFile(file)
-		} else {
-			console.log(`Item is not a ${fileType} file, moving on.`);
-		}
-	});
-}
-
-function getFilePaths(directoryPath, fileType, readDirectory, fn) {
+ function getFilePaths(directoryPath, fileType, readDirectory, fn) {
 	
 	readDirectory(directoryPath, function(error, files) {
-		let joinedFilePath = [];
+		let joinedFilePaths = [];
 
 		if (error) {
 			fn(error, undefined);
@@ -219,31 +163,60 @@ function getFilePaths(directoryPath, fileType, readDirectory, fn) {
 				if (getFileType(file) === fileType) {
 					return verifyItemIsAFile(file);
 				} else {
-					return console.log(`Item is not a ${fileType} file, moving on.`);
+					console.log(`${file} is not a ${fileType} file, moving on.`);
+					return false;
 				}
 			})
 			.forEach(function (file) {
-				return joinedFilePath.push(file);
+				return joinedFilePaths.push(file);
 			});
 		}
-		console.log(joinedFilePath);
-		return fn(undefined, joinedFilePath);
+		return fn(undefined, joinedFilePaths);
 	});
 }
 
-// function getAllDirectoryFiles(directoryPath, fn) {
-// 	fs.readdir(directoryPath, function(error, files) {
-// 		console.log()
-// 		// let joinedFilePath = [];
-// 		if (error) {
-// 			console.log(error);
-// 			// fn (error, undefined);
-// 		} else {
-// 			// console.log(files);
-// 			return files;
-// 		}
-// 	});
-// }
+/**
+ * Read a directory, return array of all file paths
+ * @param {String} destinationPath
+ * @param {Function} readDictory - Function that reads a directory path
+ * @returns {Array} joinedFilePath
+ * @callback
+ */
+function arrayOfFilePaths(directoryPath, readDirectory, fn) {
+
+	readDirectory(directoryPath, function(error, files) {
+	let joinedFilePath = [];
+
+		if (error) {
+			fn(error, undefined);
+		} else {
+			files.map(function(file) {
+				joinedFilePath.push(path.join(directoryPath, file));
+			});
+			return joinedFilePath;
+		}
+	});
+}
+
+/**
+ * Filter
+ * @param {Array} filePaths - Array of file paths to filter
+ * @param {String} fileType - File extension to filter by
+ * @param {Function} getFileType - Function that checks file ext
+ * @param {Function} verifyItemIsAFile - Function that checks if item is a file.
+ * @returns
+ * @callback
+ */
+function filterFilePaths(filePaths, fileType, getFileType, verifyItemIsAFile) {
+	var filteredFilePaths = filePaths.filter(function(file) {
+
+		if (getFileType(file) === fileType) {
+			return verifyItemIsAFile(file)
+		} else {
+			console.log(`Item is not a ${fileType} file, moving on.`);
+		}
+	});
+}
 
 /**
  * Verify a given item in the directory is a file.
@@ -274,7 +247,6 @@ function moveScheduleDataFileString(sourceFilePath, destinationPath, fn) {
 	let currentDate = getCurrentDate(),
 			currentFile = path.parse(sourceFilePath),
 			finalPath		= destinationPath + currentDate + currentFile.name + currentFile.ext;
-			// finalPath		= destinationPath + currentFile.name + currentDate + currentFile.ext;
 
 	if (fs.existsSync(sourceFilePath) === true) {
 		fs.readFile(sourceFilePath, function(error, data) {
@@ -317,7 +289,7 @@ function moveScheduleDataFileArray(sourceFilePath, destinationPath, fn) {
 							fn(error, undefined);
 						} else {
 							console.log('Success! %s moved to %s.', path.basename(filePath), destinationPath);
-							return filesMoved.push(filePath);
+							return false;
 						}
 					});
 					fn(undefined, filesMoved);
@@ -335,30 +307,29 @@ function moveScheduleDataFileArray(sourceFilePath, destinationPath, fn) {
  * @callback
  */
 function moveRawScheduleDataFile(sourceFilePath, destinationPath, fn) {
-	let currentDate = getCurrentDate(),
-			filesMoved 	= [];
+	let currentDate = getCurrentDate();
+			// filesMoved 	= [];
 
-	destinationPath.forEach(function(destPath) {	
-		sourceFilePath.forEach(function(filePath) {
-			fs.readFile(filePath, function(error, data) {
-				if (error) {
-					fn(error, undefined);
-				} else {
-					fs.writeFile(destPath + currentDate + path.basename(filePath), data, function(error) {
-						if (error) {
-							fn(error, undefined);
-						} else {
-							console.log('Success! %s moved to %s.', path.basename(filePath), destPath);
-							filesMoved.push(filePath);
-						}
-						return filesMoved;
-					});
-					fn(undefined, filesMoved);
-				}
-			});
+	destinationPath.forEach(function(destPath) {
+
+		fs.readFile(sourceFilePath, function(error, data) {
+			if (error) {
+				console.log(error);
+				// fn(error, undefined);
+			} else {
+				console.log(`Writing to ${destPath}.`);
+				fs.writeFile(destPath + currentDate + path.basename(sourceFilePath), data, function(error) {
+					if (error) {
+						console.log(error);
+						// fn(error, undefined);
+					} else {
+						console.log(`Success! ${path.basename(sourceFilePath)} moved to ${destPath}.`);
+						return true;
+					}
+				});
+			}
 		});
 	});
-	return sourceFilePath;
 }
 
 /**
@@ -380,19 +351,20 @@ function removeFile(sourceFilePath, fn) {
 }
 
 /**
- * Remove file from source location
- * @param {string} sorceFilePath - A file path string to be removed
- * @returns {String} - If all files removed, confirmation message
+ * Remove file from source location, sync
+ * @param {string} filePath - A file path string to be removed
+ * @returns {Boolean} - If all files removed, returns true
  * @callback
  */
-function removeSingleFile(filePath, fn) {
-		fs.unlink(filePath, function(error) {
-			if (error) {
-			console.log(error);
-		}
-			return console.log('%s removed.', filePath);
-	});
-	fn(undefined, finalPath);
+function removeSingleFile(filePath) {
+	fs.unlinkSync(filePath);
+
+	if (verifyFilePath(filePath) === false) {
+		console.log(`File at ${filePath} removed.`);
+		return result = true;
+	} else {
+		return result = false;
+	}
 }
 
 /**
