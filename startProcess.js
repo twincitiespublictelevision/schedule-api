@@ -14,18 +14,18 @@ const launchApi = spawn('node', ['build/index.js'], {
 });
 
 launchApi.stdin.on('data', (data) => {
-	console.log(`stdin of Schedule API, PID ${launchApi.pid}: \n${data}\n`);
+	console.log(`STDIN of Schedule API, PID ${launchApi.pid}: \n${data}\n`);
 });
 
 launchApi.stdout.on('data', (data) => {
-	console.log(`stdout of Schedule API, PID ${launchApi.pid}: \n${data}\n`);
+	console.log(`STDOUT of Schedule API, PID ${launchApi.pid}: \n${data}\n`);
 });
 
 launchApi.stderr.on('data', (data) => {
 	if (data !== null) {
 		console.log(`spawn error from Schedule API PID ${launchApi.pid}: \n${data.toString()}`);
 	} else {
-		console.log(`stderr from Schedule API PID ${launchApi.pid}: ${data}`);
+		console.log(`STDERR from Schedule API PID ${launchApi.pid}: ${data}`);
 	}
 });
 
@@ -35,23 +35,23 @@ launchApi.on('close', (code) => {
 
 // Launch directory monitor on WATCH_DIR, listen on Standard In for messages.
 
-const watchBaseDir = spawn('node', ['build/processScheduleData.js'], {
+const watchBaseDir = spawn('node', ['build/watchBaseDir.js'], {
 	stdio: ['pipe', 'pipe', 'pipe', 'ipc']
 });
 
 watchBaseDir.stdin.on('data', (data) => {
-	console.log(`stdin of Watch Base Directory, PID ${watchBaseDir.pid}: \n${data}\n`);
+	console.log(`STDIN of Watch Base Directory, PID ${watchBaseDir.pid}: \n${data}\n`);
 });
 
 watchBaseDir.stdout.on('data', (data) => {
-	console.log(`stdout of Watch Base Directory, PID ${watchBaseDir.pid}: \n${data}\n`);
+	console.log(`STDOUT of Watch Base Directory, PID ${watchBaseDir.pid}: \n${data}\n`);
 });
 
 watchBaseDir.stderr.on('data', (data) => {
 	if (data !== null) {
 		console.log(`Spawn error from Watch Base Directory PID ${watchBaseDir.pid}: \n${data.toString()}`);
 	} else {
-		console.log(`stderr from Watch Base Directory, PID ${watchBaseDir.pid}: ${data}`);
+		console.log(`STDERR from Watch Base Directory, PID ${watchBaseDir.pid}: ${data}`);
 	}
 });
 
@@ -75,18 +75,18 @@ const watchWorkingDir = spawn('node', ['build/watchWorkingDir.js'], {
 });
 
 watchWorkingDir.stdin.on('data', (data) => {
-	console.log(`stdin of Watch Work Directory, PID ${watchWorkingDir.pid}: \n${data}\n`);
+	console.log(`STDIN of Watch Working Directory, PID ${watchWorkingDir.pid}: \n${data}\n`);
 });
 
 watchWorkingDir.stdout.on('data', (data) => {
-	console.log(`stdout of Watch Work Directory, PID ${watchWorkingDir.pid}: \n${data}\n`);
+	console.log(`STDOUT of Watch Working Directory, PID ${watchWorkingDir.pid}: \n${data}\n`);
 });
 
 watchWorkingDir.stderr.on('data', (data) => {
 	if (data !== null) {
-		console.log(`Spawn error from Watch Work Directory PID ${watchWorkingDir.pid}: \n${data.toString()}`);
+		console.log(`Spawn error from Watch Working Directory PID ${watchWorkingDir.pid}: \n${data.toString()}`);
 	} else {
-		console.log(`stderr from Watch Working Directory, PID ${watchWorkingDir.pid}: ${data}`);
+		console.log(`STDERR from Watch Working Directory, PID ${watchWorkingDir.pid}: ${data}`);
 	}
 });
 
@@ -98,5 +98,5 @@ watchWorkingDir.on('message', (message) => {
 });
 
 watchWorkingDir.on('close', (code) => {
-	console.log(`Watch Work Directory PID ${watchWorkingDir.pid} exited with a code of ${code}\n`);
+	console.log(`Watch Working Directory PID ${watchWorkingDir.pid} exited with a code of ${code}\n`);
 });
