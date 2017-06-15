@@ -12,9 +12,6 @@ import {
 	} from './database';
 
 import {
-	baseDirectory,
-	backupDataDirectoryPath,
-	currentDataDirectoryPath,
 	createDirectoryPath,
 	verifyFilePath,
 	beginWatchingDirectory,
@@ -36,37 +33,3 @@ import {
 createDirectoryPath(process.env.WATCH_DIR);
 
 beginWatchingDirectory(process.env.WATCH_DIR);
-
-/*
-
-verify origination directory exists
-
-	if so, stop.
-
-	if not, create the directory
-
-watch origination directory for file changes
-
-	If changes, announce type of chagne to parent process
-
-Read directory contents, adding file names to a list
-
-	Report each file name to partent process
-
-Once the file threshold is reached, pass on the list
-
-Write / save list of files to working / backup directories
-
-Pass file names to parser for converstion from XML to JSON
-
-	Report each file processed to parent process
-
-For each parsed file, extract schedule object
-
-	Report each object extracted to partent process
-
-Save schedule object to db
-
-	Report each object saved to parent process
-
-*/
