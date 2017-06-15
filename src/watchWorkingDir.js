@@ -12,9 +12,6 @@ import {
 	} from './database';
 
 import {
-	baseDirectory,
-	backupDataDirectoryPath,
-	currentDataDirectoryPath,
 	createDirectoryPath,
 	verifyFilePath,
 	beginWatchingDirectory,
