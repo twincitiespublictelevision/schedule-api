@@ -1,9 +1,12 @@
-let util 	=	require('util');
-let env 	= require('dotenv');
-let spawn = require('child_process').spawn;
 
-let moveFile 		= require('./build/moveSaveDeleteFile');
-let handleFile 	= require('./build/parseFileSaveData');
+import * as util from 'util';
+import env from 'dotenv';
+import * as child_process from 'child_process';
+
+import { moveFile } from './helpers/importScheduleData';
+import handleFile from './parseFileSaveData';
+
+let spawn = child_process.spawn;
 
 env.config({path: '/Users/tingram/Dev_Workspace/Projects/JavaScript/scheduleAPIv2/.env'});
 
@@ -68,6 +71,14 @@ watchBaseDir.on('close', (code) => {
 	console.log(`Watch Base Directory PID ${watchBaseDir.pid} exited with a code of ${code}.\n`);
 });
 
+watchBaseDir.on('uncaughtException', (error) => {
+  console.log(`Watch Base Directory PID ${watchBaseDir.pid} exiting; Uncaught exception. \n${error}.\n`);
+});
+
+watchBaseDir.on('ReferenceError', (error) => {
+  console.log(`Watch Base Directory PID ${watchBaseDir.pid} exiting; Reference error. \n${error}.\n`);
+});
+
 // Launch directory monitor on WORKING_DIR, listen on Standard In for messages.
 
 const watchWorkingDir = spawn('node', ['build/watchWorkingDir.js'], {
@@ -99,4 +110,12 @@ watchWorkingDir.on('message', (message) => {
 
 watchWorkingDir.on('close', (code) => {
 	console.log(`Watch Working Directory PID ${watchWorkingDir.pid} exited with a code of ${code}\n`);
+});
+
+watchWorkingDir.on('uncaughtException', (error) => {
+  console.log(`Watch Working Directory PID ${watchWorkingDir.pid} exiting; Uncaught exception. \n${error}.\n`);
+});
+
+watchWorkingDir.on('ReferenceError', (error) => {
+  console.log(`Watch Working Directory PID ${watchWorkingDir.pid} exiting; Reference error. \n${error}.\n`);
 });
