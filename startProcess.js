@@ -59,7 +59,6 @@ watchBaseDir.on('message', (message) => {
 	if(message.start === true) {
 		console.log('Watch Base Directory: File arrived; Will now move, save, and then delete.\n');
 		moveFile(message.file);
-		// fileMoveSaveDelete();
 	} else {
 		console.log(`Watch Base Directory PID ${watchBaseDir.pid} received unexpected message, ${message}\n`);
 	}
@@ -68,38 +67,6 @@ watchBaseDir.on('message', (message) => {
 watchBaseDir.on('close', (code) => {
 	console.log(`Watch Base Directory PID ${watchBaseDir.pid} exited with a code of ${code}.\n`);
 });
-
-// Launch file move, save, delete process
-
-function fileMoveSaveDelete() {
-	const moveSaveDeleteFile = spawn('node', ['build/moveSaveDeleteFile.js'], {
-		stdio: ['pipe', 'pipe', 'pipe', 'ipc']
-	});
-
-	moveSaveDeleteFile.stdin.on('data', (data) => {
-		console.log(`stdin of moveSaveDeleteFile, PID ${moveSaveDeleteFile.pid}: \n${data}\n`);
-	});
-
-	moveSaveDeleteFile.stdout.on('data', (data) => {
-		console.log(`stdout of moveSaveDeleteFile, PID ${moveSaveDeleteFile.pid}: \n${data}\n`);
-	});
-
-	moveSaveDeleteFile.stderr.on('data', (data) => {
-		console.log(`stderr of moveSaveDeleteFile, PID ${moveSaveDeleteFile.pid}: \n${data}\n`);
-	});
-
-	moveSaveDeleteFile.on('message', (message) => {
-		console.log(`The Message from MSD is, ${util.inspect(message)}.`);
-		if (message.finished === true) {
-			console.log(`Message received, ${util.inspect(message)}, exiting MSD process.`);
-			moveSaveDeleteFile.disconnect();
-		}
-	});
-
-	moveSaveDeleteFile.on('close', (code) => {
-		console.log(`MSD, PID ${moveSaveDeleteFile.pid}, exited with a code of ${code}\n`);
-	});
-}
 
 // Launch directory monitor on WORKING_DIR, listen on Standard In for messages.
 
@@ -127,42 +94,9 @@ watchWorkingDir.on('message', (message) => {
 	console.log('Watch Work Directory: File arrived; Will now parse and extract data, then send to DB.\n');
 	if(message.start === true) {
 		handleFile(message.file);
-		// fileParseExtractSend();
 	}
 });
 
 watchWorkingDir.on('close', (code) => {
 	console.log(`Watch Work Directory PID ${watchWorkingDir.pid} exited with a code of ${code}\n`);
 });
-
-// // Parse XML file, extracting object and saving it to the DB
-
-function fileParseExtractSend() {
-	const parseExtractSend = spawn('node', ['build/parseFileSaveData.js'], {
-		stdio: ['pipe', 'pipe', 'pipe', 'ipc']
-	});
-
-	parseExtractSend.stdin.on('data', (data) => {
-		console.log(`stdin of parseExtractSend, PID ${parseExtractSend.pid}: \n${data}\n`);
-	});
-
-	parseExtractSend.stdout.on('data', (data) => {
-		console.log(`stdout of parseExtractSend, PID ${parseExtractSend.pid}: \n${data}\n`);
-	});
-
-	parseExtractSend.stderr.on('data', (data) => {
-		console.log(`stderr of parseExtractSend, PID ${parseExtractSend.pid}: \n${data}\n`);
-	});
-
-	parseExtractSend.on('message', (message) => {
-		console.log(`The message from PES is, ${util.inspect(message)}.\n`);
-		if (message.finished === true) {
-			console.log(`Message received, ${util.inspect(message)}, exiting PES process.\n`);
-			parseExtractSend.disconnect();
-		}
-	});
-
-	parseExtractSend.on('close', (code) => {
-		console.log(`PES, PID ${parseExtractSend.pid}, exited with a code of ${code}\n`);
-	});
-}
