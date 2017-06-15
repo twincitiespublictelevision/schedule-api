@@ -1,10 +1,7 @@
+
 import * as fs from 	'fs';
 import * as path from 'path';
 import * as util from 'util';
-
-const baseDirectory 						= (__dirname + '/../../data');
-const backupDataDirectoryPath 	= (__dirname + '/../../data/backupScheduleData/');
-const currentDataDirectoryPath 	= (__dirname + '/../../data/currentScheduleData/');
 
 /**
  * Verify a given directory path exists.
@@ -72,9 +69,12 @@ function monitorDirectory(directoryPath) {
 	fs.watch(directoryPath, function(eventType, filename) {
 		if (eventType === 'rename' &&
 				getFileType(filename) === '.xml' &&
-				verifyFilePath(directoryPath+'/'+filename) === true) {
+				verifyFilePath(directoryPath+filename) === true) {
 
-			process.send({start: true});
+			process.send({
+				start: true,
+				file: directoryPath+filename
+			});
 			console.log(`New event detected, ${eventType} on ${filename}.`);
 		} else {
 			console.log(`That file, ${filename}, has been removed. No action taken.`);
@@ -237,6 +237,38 @@ function getFileType(file) {
 }
 
 /**
+ * Copy file to working and backup directories
+ * @param {String} file - A file path to read / write to the given directories
+ * @member {Function} currentDate - Function that returns a date string to append to the file 
+ * @returns
+ */
+function moveFile(file) {
+	let currentDate = getCurrentDate();
+
+	fs.readFile(file, function(error, data) {
+		if (error) {
+			console.log(error);
+		}
+		fs.writeFile(process.env.BACKUP_DIR + currentDate + path.basename(file), data, function(error) {
+			if (error) {
+				console.log(error);
+			}
+			fs.writeFile(process.env.WORKING_DIR + currentDate + path.basename(file), data, function(error) {
+				if (error) {
+					console.log(error);
+				}
+				fs.unlink(file, function(error) {
+					if (error) {
+						console.log(error);	
+					}
+					console.log(`Deleted ${path.basename(file)}.`);
+				});
+			});
+		});
+	});
+}
+
+/**
  * Copy file from source to destination
  * @param {String} sorceFilePath
  * @param {String} destinationPath
@@ -317,18 +349,19 @@ function moveRawScheduleDataFile(sourceFilePath, destinationPath, fn) {
 				console.log(error);
 				// fn(error, undefined);
 			} else {
-				console.log(`Writing to ${destPath}.`);
 				fs.writeFile(destPath + currentDate + path.basename(sourceFilePath), data, function(error) {
 					if (error) {
 						console.log(error);
 						// fn(error, undefined);
 					} else {
 						console.log(`Success! ${path.basename(sourceFilePath)} moved to ${destPath}.`);
-						return true;
+						return sourceFilePath;
 					}
 				});
 			}
 		});
+		console.log(sourceFilePath);
+		return sourceFilePath;
 	});
 }
 
@@ -344,10 +377,10 @@ function removeFile(sourceFilePath, fn) {
 			if (error) {
 			console.log(error);
 			}
-			return console.log(`Removed ${filePath}.`);
+			console.log(`Removed ${filePath}.`);
 		});
 	});
-	fn(undefined, sourceFilePath);
+	// fn(undefined, sourceFilePath);
 }
 
 /**
@@ -359,12 +392,12 @@ function removeFile(sourceFilePath, fn) {
 function removeSingleFile(filePath) {
 	fs.unlinkSync(filePath);
 
-	if (verifyFilePath(filePath) === false) {
-		console.log(`File at ${filePath} removed.`);
-		return result = true;
-	} else {
-		return result = false;
-	}
+	// if (verifyFilePath(filePath) === false) {
+	// 	console.log(`File at ${filePath} removed.`);
+	// 	return result = true;
+	// } else {
+	// 	return result = false;
+	// }
 }
 
 /**
@@ -506,11 +539,9 @@ export {
 	moveScheduleDataFileString,
 	moveRawScheduleDataFile,
 	moveScheduleDataFileArray,
+	moveFile,
 	removeFile,
 	removeSingleFile,
-	baseDirectory,
-	backupDataDirectoryPath,
-	currentDataDirectoryPath,
 	extractScheduleData,
 	getFileType,
 	filterFilePaths,
