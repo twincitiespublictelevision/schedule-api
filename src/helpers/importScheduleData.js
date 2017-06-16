@@ -70,7 +70,7 @@ function monitorDirectory(directoryPath) {
 		if (eventType === 'rename' &&
 				getFileType(filename) === '.xml' &&
 				verifyFilePath(directoryPath+filename) === true) {
-
+			console.log(`Saw event for ${filename} at ${Date.now()}.`);
 			process.send({
 				start: true,
 				file: directoryPath+filename
@@ -239,7 +239,7 @@ function getFileType(file) {
 /**
  * Copy file to working and backup directories
  * @param {String} file - A file path to read / write to the given directories
- * @member {Function} currentDate - Function that returns a date string to append to the file 
+ * @member {Function} currentDate - Function that returns a date string to append to the file
  * @returns
  */
 function moveFile(file) {
@@ -259,7 +259,7 @@ function moveFile(file) {
 				}
 				fs.unlink(file, function(error) {
 					if (error) {
-						console.log(error);	
+						console.log(error);
 					}
 					console.log(`Deleted ${path.basename(file)}.`);
 				});
