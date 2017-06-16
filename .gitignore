@@ -17,6 +17,7 @@ node_modules
 
 # Environment Credentials
 *.env
+!.example.env
 .eslintrc
 
 # Databases, Stores
