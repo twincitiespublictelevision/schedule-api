@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "schedule-api",
   "version": "1.0.0",
   "description": "An API for interacting with the schedule data of the various TPT channels.",
