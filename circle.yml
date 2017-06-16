@@ -1,7 +1,7 @@
 machine:
-	node:
-		version: 6.1.0
+  node:
+    version: 6.1.0
 
 dependencies:
-	post:
-		- cp .example.env .env
+  post:
+    - cp .example.env .env
