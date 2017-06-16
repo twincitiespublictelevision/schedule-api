@@ -35,7 +35,7 @@ function timedMultipleInsert(mongoDB, fullScheduleData, file, callback) {
 	let scheduleCollection = mongoDB.collection('scheduleData');
 	let removeStart = Date.now();
 
-	scheduleCollection.remove({}, function(){
+	scheduleCollection.remove({'schedule.schedule_channel': fullScheduleData[0].schedule.schedule_channel}, function(){
 		console.log(`Removing ${file} documents took: ${Date.now() - removeStart} ms`);
 		let addingStart = Date.now();
 		scheduleCollection.insertMany(fullScheduleData, function(error, result) {
@@ -43,6 +43,7 @@ function timedMultipleInsert(mongoDB, fullScheduleData, file, callback) {
 				console.log(error);
 			}
 				console.log(`Adding ${file} documents took: ${Date.now() - addingStart} ms`);
+				console.log(`Done ${file} at ${Date.now()}.`);
 			});
 	});
 };
