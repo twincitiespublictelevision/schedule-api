@@ -22,7 +22,7 @@ export default class ChannelRouter {
 	getAll(request, response) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 
-		scheduleCollection.find().toArray(function(error, docs) {
+		scheduleCollection.find().limit( 20 ).toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
 			}
