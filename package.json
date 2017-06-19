@@ -9,11 +9,12 @@
     "url": "https://github.com/twincitiespublictelevision/schedule-api"
   },
   "scripts": {
-    "test": "jest",
+    "test": "node --trace-warnings -r dotenv/config node_modules/.bin/jest",
     "debug": "DEBUG=express:* node build/index.js",
-    "start": "node build/index.js"
+    "start": "node -r dotenv/config build/startProcess.js"
   },
   "jest": {
+    "verbose": true,
     "transform": {
       ".*": "<rootDir>/node_modules/babel-jest"
     }
@@ -21,6 +22,7 @@
   "author": "TPT",
   "license": "Apache-2.0",
   "devDependencies": {
+    "babel-jest": "^20.0.3",
     "dotenv": "^4.0.0",
     "jest": "^19.0.2",
     "supertest": "^3.0.0"
@@ -36,7 +38,6 @@
     "mongodb": "^2.2.27",
     "mongoose": "^4.9.5",
     "morgan": "^1.8.1",
-    "xml2js": "^0.4.17",
-    "xml2json": "^0.11.0"
+    "xml2js": "^0.4.17"
   }
 }
