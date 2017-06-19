@@ -1,13 +1,14 @@
-import request from 'supertest';
-import api from '../src/api.js';
 
-const app = new api().express;
+import request from 'supertest';
+import Api from '../src/api.js';
+
+const app = new Api().express;
 
 describe('scheduleAPI', function() {
 
 	describe('GET /api/v1/channels - get all airings', function() {
 		// Tests the expected properties on the response object.
-		let expectedProps = ['airing'];
+		let expectedProps = ['schedule', 'episode', 'series', '_id'];
 
 		it('should return a JSON array', function() {
 			return request(app).get('/api/v1/channels')
