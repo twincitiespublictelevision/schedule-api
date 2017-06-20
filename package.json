@@ -24,7 +24,7 @@
   "devDependencies": {
     "babel-jest": "^20.0.3",
     "dotenv": "^4.0.0",
-    "jest": "^19.0.2",
+    "jest": "^20.0.4",
     "supertest": "^3.0.0"
   },
   "dependencies": {
