@@ -4,6 +4,8 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import * as fs from 'fs';
 import ChannelRouter from './routes/channelRouter';
+import EpisodeRouter from './routes/episodeRouter';
+import AiringRouter from './routes/airingRouter';
 
 const serverLogsPath = process.env.ACCESS_LOG;
 const accessLogStream = fs.createWriteStream(serverLogsPath, {flags: 'a'});
@@ -40,7 +42,11 @@ export default class Api {
 	routes() {
 
 		const channelRouter = new ChannelRouter();
+		const episodeRouter = new EpisodeRouter();
+		const airingRouter = new AiringRouter();
 
 		this.express.use(channelRouter.path, channelRouter.router);
+		this.express.use(episodeRouter.path, episodeRouter.router);
+		this.express.use(airingRouter.path, airingRouter.router);
 	}
 }
