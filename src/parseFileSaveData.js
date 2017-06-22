@@ -15,6 +15,34 @@ import {
 	extractScheduleData
 } from './helpers/importScheduleData';
 
+function convertDates(records) {
+	let scheduleCollection = mongoDB.collection('scheduleData');
+
+	let bulkOps = [];
+	let cursor = scheduleCollection.find({});
+
+	cursor.forEach(function (doc) {
+    let newDate = new Date(doc.schedule.schedule_date);
+    bulkOps.push(
+      {
+				'updateOne'	: {
+					'filter' : { '_id' : doc._id },
+          'update' : { '$set' : { 'schedule.schedule_date' : newDate } }
+        }
+      }
+    );
+
+    if (bulkOps.length === 500) {
+      scheduleCollection.bulkWrite(bulkOps);
+      bulkOps = [];
+    }
+	});
+
+	if (bulkOps.length > 0) {
+		scheduleCollection.bulkWrite(bulkOps);
+	}
+}
+
 function timedMultipleInsert(mongoDB, fullScheduleData, file, callback) {
 	let scheduleCollection = mongoDB.collection('scheduleData');
 	let removeStart = Date.now();
@@ -26,6 +54,7 @@ function timedMultipleInsert(mongoDB, fullScheduleData, file, callback) {
 			if(error) {
 				console.log(error);
 			}
+				convertDates(result);
 				console.log(`Adding ${file} documents took: ${Date.now() - addingStart} ms`);
 				console.log(`Done ${file} at ${Date.now()}.`);
 			});
