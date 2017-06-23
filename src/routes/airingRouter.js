@@ -38,7 +38,7 @@ export default class AiringRouter {
 			.json(docs);
 		});
 	}
-	
+
 	/**
 	 * Return all airings for a given channel
 	 * @description example URL - $eq - http://localhost:3000/api/v1/airings/channel/TPTKIDS
@@ -49,11 +49,8 @@ export default class AiringRouter {
 	 */
 	getAiringsByChannel(request, response) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
-		let requestedChannel = request.params.channel;
-
-		if (requestedChannel === '2') {
-			requestedChannel = parseInt(requestedChannel);
-		}
+		let channel = request.params.channel;
+		let requestedChannel = channel === '2' ? parseInt(channel) : channel;
 
 		scheduleCollection.find( {
 			'schedule.schedule_channel' : requestedChannel
@@ -81,7 +78,7 @@ export default class AiringRouter {
 		let requestedDate = request.params.date;
 
 		scheduleCollection.find( {
-			'schedule.schedule_date' : { '$eq' : requestedDate }
+			'schedule.schedule_date' : { '$eq' : new Date(requestedDate) }
 		} )
 		.limit( 10 )
 		.toArray(function(error, docs) {
@@ -108,8 +105,8 @@ export default class AiringRouter {
 		
 		scheduleCollection.find( {
     	'schedule.schedule_date' : {
-    		'$gte' : requestedStartDate,
-    		'$lte' : requestedEndDate }
+    		'$gte' : new Date(requestedStartDate),
+    		'$lte' : new Date(requestedEndDate) }
        } )
 		.limit( 10 )
 		.toArray(function(error, docs) {
