@@ -84,7 +84,7 @@ export default class EpisodeRouter {
 
 		scheduleCollection.find( { $and : [
 			{ 'episode.program_id' : episodeID },
-			{ 'schedule.schedule_date' : { '$eq' : requestedDate } }
+			{ 'schedule.schedule_date' : { '$eq' : new Date(requestedDate) } }
 		] } )
 		.limit( 10 )
 		.toArray(function(error, docs) {
@@ -95,6 +95,12 @@ export default class EpisodeRouter {
 			.json(docs);
 		});
 	}
+
+	// getEpisodeByDateRangeHandler(mongo) {
+	// 	return function(request, response) {
+	// 		return this.getEpisodeByDateRange(request, response, mongo);
+	// 	}
+	// }
 
 	/**
 	 * Return all episodes airing on a specific date
@@ -110,21 +116,45 @@ export default class EpisodeRouter {
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
 
-		scheduleCollection.find( { $and : [
-    	{ 'episode.program_id' : episodeID },
-    	{ 'schedule.schedule_date' : {
-    		'$gte' : requestedStartDate,
-    		'$lte' : requestedEndDate } }
-       ] } )
-		.limit( 10 )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
-	}
+
+		// let dateRegex = /^\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\dZ$/;
+		// let invalidFields = [];
+
+		// if (requestedStartDate.search(dateRegex) === -1) {
+		// 	invalidFields.push('startdate');
+		// }
+
+		// if (requestedEndDate.search(dateRegex) === -1) {
+		// 	invalidFields.push('enddate');
+		// }
+
+		// if (invalidFields.length > 0) {
+		// 	response.status(400)
+		// 	.json({
+		// 		error: {
+		// 			code: 1234,
+		// 			message: 'Bad / Malformed Request',
+		// 			description: invalidFields
+		// 		}
+		// 	});
+		// } else {
+
+			scheduleCollection.find( { $and : [
+				{ 'episode.program_id' : episodeID },
+				{ 'schedule.schedule_date' : {
+					'$gte' : new Date(requestedStartDate),
+					'$lte' : new Date(requestedEndDate) } }
+	       ] } )
+			.limit( 10 )
+			.toArray(function(error, docs) {
+				if (error) {
+					console.log(error);
+				}
+				response.status(200)
+				.json(docs);
+			});
+		}
+	// }
 
 	/**
 	 * Attach route handlers to their endopoints
