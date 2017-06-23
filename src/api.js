@@ -3,7 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import * as fs from 'fs';
-import ChannelRouter from './routes/channelRouter';
+import SeriesRouter from './routes/channelRouter';
 import EpisodeRouter from './routes/episodeRouter';
 import AiringRouter from './routes/airingRouter';
 
@@ -41,11 +41,11 @@ export default class Api {
 	//connect resource routers
 	routes() {
 
-		const channelRouter = new ChannelRouter();
+		const seriesRouter = new SeriesRouter();
 		const episodeRouter = new EpisodeRouter();
 		const airingRouter = new AiringRouter();
 
-		this.express.use(channelRouter.path, channelRouter.router);
+		this.express.use(seriesRouter.path, seriesRouter.router);
 		this.express.use(episodeRouter.path, episodeRouter.router);
 		this.express.use(airingRouter.path, airingRouter.router);
 	}
