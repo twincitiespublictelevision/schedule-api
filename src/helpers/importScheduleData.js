@@ -380,7 +380,6 @@ function removeFile(sourceFilePath, fn) {
 			console.log(`Removed ${filePath}.`);
 		});
 	});
-	// fn(undefined, sourceFilePath);
 }
 
 /**
@@ -391,13 +390,6 @@ function removeFile(sourceFilePath, fn) {
  */
 function removeSingleFile(filePath) {
 	fs.unlinkSync(filePath);
-
-	// if (verifyFilePath(filePath) === false) {
-	// 	console.log(`File at ${filePath} removed.`);
-	// 	return result = true;
-	// } else {
-	// 	return result = false;
-	// }
 }
 
 /**
