@@ -3,8 +3,8 @@
 import * as http from 'http';
 import Api from './api';
 import {
-	initialize,
-	connect
+	databaseConnectionError,
+	databaseConnection
 } from './database';
 
 // App Constants
@@ -16,8 +16,8 @@ const server = http.createServer(app.express);
 
 // DB Connection
 
-initialize();
-connect();
+databaseConnectionError();
+databaseConnection();
 
 // Server Connection
 
