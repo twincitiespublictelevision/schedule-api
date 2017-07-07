@@ -118,8 +118,14 @@ export default class AiringRouter {
 		});
 	}
 
-		// http://localhost:3000/api/v1/airings/genre/CH
-
+	/**
+	 * Return all airings within a give range of dates
+	 * @description example URL - http://localhost:3000/api/v1/airings/genre/CH
+	 * @ param {String} request - the request string
+	 * @ param {String} response - the response string
+	 * @ member {Function} scheduleCollection - links to mongoDB collection
+	 * @ external {}
+	 */
 	getAiringsByGenreCode(request, response) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let genreCode = request.params.genreCode;
