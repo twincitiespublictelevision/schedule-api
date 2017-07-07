@@ -118,6 +118,25 @@ export default class AiringRouter {
 		});
 	}
 
+		// http://localhost:3000/api/v1/airings/genre/CH
+
+	getAiringsByGenreCode(request, response) {
+		let scheduleCollection = mongoDB.collection('scheduleData');
+		let genreCode = request.params.genreCode;
+
+		scheduleCollection.find( {
+			'episode.epi_genrelist_nat.0.genrecd' : genreCode
+		} )
+		.limit( 10 )
+		.toArray(function(error, docs) {
+			if (error) {
+				console.log(error);
+			}
+			response.status(200)
+			.json(docs);
+		});
+	}
+
 	/**
 	 * Attach route handlers to their endopoints
 	 */
@@ -126,5 +145,6 @@ export default class AiringRouter {
 		this.router.get('/channel/:channel', this.getAiringsByChannel);
 		this.router.get('/date/:date', this.getAiringsByDate);
 		this.router.get('/startdate/:startDate/enddate/:endDate', this.getAiringsByDateRange);
+		this.router.get('/genre/:genreCode', this.getAiringsByGenreCode);
 	}
 }
