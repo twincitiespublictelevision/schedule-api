@@ -3,7 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import * as fs from 'fs';
-import SeriesRouter from './routes/channelRouter';
+import SeriesRouter from './routes/seriesRouter';
 import EpisodeRouter from './routes/episodeRouter';
 import AiringRouter from './routes/airingRouter';
 
