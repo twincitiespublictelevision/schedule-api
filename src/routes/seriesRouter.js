@@ -100,25 +100,6 @@ export default class SeriesRouter {
 		});
 	}
 
-	// http://localhost:3000/api/v1/channels/genre/CH
-
-	getByGenreCode(request, response) {
-		let scheduleCollection = mongoDB.collection('scheduleData');
-		let genreCode = request.params.genreCode;
-
-		scheduleCollection.find( {
-			'episode.epi_genrelist_nat.0.genrecd' : genreCode
-		} )
-		.limit( 10 )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
-	}
-
 	/**
 	 * Attach route handlers to their endopoints
 	 */
@@ -126,6 +107,5 @@ export default class SeriesRouter {
 		this.router.get('/:id', this.getSeriesById);
 		this.router.get('/:id/date/:date', this.getSeriesByDate);
 		this.router.get('/:id/startdate/:startDate/enddate/:endDate', this.getSeriesByDateRange);
-		this.router.get('/:id/genre/:genreCode', this.getByGenreCode);
 	}
 }
