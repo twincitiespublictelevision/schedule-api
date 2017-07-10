@@ -73,6 +73,7 @@ These are the values required to connect to the MongoDB instance
 | LOG_LEVEL  | Error level to log      |
 
 #### Error Severity
+```
 * emergency: System is unusable
 * alert:     Action must be taken immediately
 * critical:  Critical conditions
@@ -81,6 +82,7 @@ These are the values required to connect to the MongoDB instance
 * notice:    Normal but significant condition
 * info:      Informational message
 * debug:     Debug-level messages
+```
 
 ## Usage
 
