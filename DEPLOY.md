@@ -56,31 +56,31 @@ A sample config file is supplied in `.example.env`
 
 These are the values required to connect to the MongoDB instance
 
-| Option      |
-| --------    |
-| DB_HOST     |
-| DB_PORT     |
-| DB_NAME     |
-| DB_USERNAME |
-| DB_PASSWORD |
+| Option      | Value                                    |
+| --------    | --------                                 |
+| DB_HOST     | Host address for the DB                  |
+| DB_PORT     | Port number for the DB, default is 27017 |
+| DB_NAME     | Name of the database (collection)        |
+| DB_USERNAME | Username for the database                |
+| DB_PASSWORD | Password for the database                |
 
 ### Logging [log]
 
-| Option     | Value            |
-| --------   | ---------------- |
+| Option     | Value                   |
+| --------   | ----------------        |
 | ACCESS_LOG | Path to server log file |
 | ERROR_LOG  | Path to error log file  |
 | LOG_LEVEL  | Error level to log      |
 
 #### Error Severity
-* emergency:	System is unusable.
-* alert:		Action must be taken immediately.
-* critical:		Critical conditions.
-* error:		Error conditions.
-* warning:		Warning conditions.
-* notice:		Normal but significant condition.
-* info:			Informational message.
-* debug:		Debug-level messages.
+* emergency: System is unusable
+* alert:     Action must be taken immediately
+* critical:  Critical conditions
+* error:     Error conditions
+* warning:   Warning conditions
+* notice:    Normal but significant condition
+* info:      Informational message
+* debug:     Debug-level messages
 
 ## Usage
 
