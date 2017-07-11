@@ -9,9 +9,6 @@ npm-debug.log*
 # Dependencies - NPM
 node_modules
 
-# Build Files
-# /build*
-
 # Environment Config
 
 # Environment Credentials
