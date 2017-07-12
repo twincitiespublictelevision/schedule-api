@@ -5,6 +5,7 @@ __scratch.js
 # Logs
 *.log
 npm-debug.log*
+license-log.json
 
 # Dependencies - NPM
 node_modules
