@@ -115,6 +115,39 @@ function findAll(fn) {
 	})
 }
 
+/**
+ * Update a date string to a date object
+ * @ param {String} records - the database records to update
+ * @ member {Function} scheduleCollection - links to mongoDB collection
+ */
+function convertDates(records) {
+	let scheduleCollection = mongoDB.collection('scheduleData');
+
+	let bulkUpdate = [];
+	let cursor = scheduleCollection.find({});
+
+	cursor.forEach(function (doc) {
+		let newDate = new Date(doc.schedule.schedule_date);
+		bulkUpdate.push(
+			{
+				'updateOne'	: {
+					'filter' : { '_id' : doc._id },
+					'update' : { '$set' : { 'schedule.schedule_date' : newDate } }
+				}
+			}
+		);
+
+		if (bulkUpdate.length === 500) {
+			scheduleCollection.bulkWrite(bulkUpdate);
+			bulkUpdate = [];
+		}
+	});
+
+	if (bulkUpdate.length > 0) {
+		scheduleCollection.bulkWrite(bulkUpdate);
+	}
+}
+
 export {
 	mongoURI,
 	mongoDB,
@@ -124,5 +157,6 @@ export {
 	multipleInsert,
 	removeAllInsert,
 	removeAll,
-	findAll
+	findAll,
+	convertDates
 };
