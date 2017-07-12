@@ -83,13 +83,13 @@ function monitorDirectory(directoryPath) {
 }
 
 /**
- * Add leading 0 to integers less than 10,
+ * Add leading 0 to integers less than 10 but greater than 0
  * Coerce number to string through concatenation
  * @param {Number} num
  * @return {String}
  */
 function leadingZero(num) {
-	if (num < 10) {
+	if (num < 10 && num >= 0) {
 		return num = '0' + num;
 	} else {
 		return num;
