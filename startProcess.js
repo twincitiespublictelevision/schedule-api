@@ -3,7 +3,7 @@ import * as util from 'util';
 import * as child_process from 'child_process';
 
 import { moveFile } from './helpers/importScheduleData';
-import handleFile from './parseFileSaveData';
+import { handleFile } from './parseFileSaveData';
 
 let spawn = child_process.spawn;
 
