@@ -65,17 +65,18 @@ function multipleInsert(mongoDB, data, callback) {
  * @ param (Function) callback - Do something with the results
  * @ member {Function} scheduleCollection - links to mongoDB collection
  */
-function removeAllInsert(mongoDB, data, callback) {
+function removeOldInsertNew(mongoDB, data, callback) {
 	let scheduleCollection = mongoDB.collection('scheduleData');
 
-	scheduleCollection.remove({}, function(){
+	scheduleCollection.remove( {
+		'schedule.schedule_channel': data[0].schedule.schedule_channel
+	}, function(){
 		scheduleCollection.insertMany(data,
 			function(error, result) {
 				if(error) {
 					console.log(error);
 				}
-				console.log('Inserted documents.');
-				callback(result);
+				convertDates(result);
 		});
 	});
 }
@@ -121,7 +122,7 @@ function findAll(fn) {
  * @ param {String} records - the database records to update
  * @ member {Function} scheduleCollection - links to mongoDB collection
  */
-function convertDates(records) {
+function convertDates(data) {
 	let scheduleCollection = mongoDB.collection('scheduleData');
 
 	let bulkUpdate = [];
@@ -156,7 +157,7 @@ export {
 	databaseConnection,
 	singleInsert,
 	multipleInsert,
-	removeAllInsert,
+	removeOldInsertNew,
 	removeAll,
 	findAll,
 	convertDates
