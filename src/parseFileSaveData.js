@@ -8,7 +8,7 @@ import {
 	removeOldInsertNew,
 	} from './database';
 
-function handleFile(file) {
+function parseFileSaveData(file) {
 	let filename = path.basename(file);
 
 	jsonScheduleData(file, function(error, parseData) {
@@ -23,4 +23,4 @@ function handleFile(file) {
 	});
 }
 
-export { handleFile };
+export { parseFileSaveData };

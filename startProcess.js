@@ -3,7 +3,7 @@ import * as util from 'util';
 import * as child_process from 'child_process';
 
 import { moveFile } from './helpers/fileInOut';
-import { handleFile } from './parseFileSaveData';
+import { parseFileSaveData } from './parseFileSaveData';
 
 let spawn = child_process.spawn;
 
@@ -101,7 +101,7 @@ watchWorkingDir.stderr.on('data', (data) => {
 watchWorkingDir.on('message', (message) => {
 	console.log('Watch Work Directory: File arrived; Will now parse and extract data, then send to DB.\n');
 	if(message.start === true) {
-		handleFile(message.file);
+		parseFileSaveData(message.file);
 	}
 });
 
