@@ -1,7 +1,6 @@
 
 import * as fs from 	'fs';
 import * as path from 'path';
-import * as util from 'util';
 
 /**
  * Verify a given directory path exists.
@@ -40,7 +39,7 @@ function createDirectory(directoryPath) {
 		if (error) {
 			console.log(error);
 		}
-		return console.log(`Created directory, the path is, ${directoryPath}`);
+		console.log(`Created directory, the path is, ${directoryPath}`);
 	});
 }
 
@@ -67,6 +66,15 @@ function beginWatchingDirectory(directoryPath) {
  */
 function getFileType(file) {
 	return path.extname(file);
+}
+
+/**
+ * Verify a given item in the directory is a file.
+ * @param {String} file
+ * @returns {Boolean}
+ */
+function verifyItemIsAFile(file) {
+	return fs.statSync(file).isFile();
 }
 
 /**
@@ -124,119 +132,6 @@ function getCurrentDate() {
 }
 
 /**
- * Save new JSON file in working directory for processing
- * @param {String} sorceFilePath
- * @param {Object} parseData - Return value of parsed file
- * @returns {String} finalPath
- * @callback
- */
-// function saveParsedFile(xmlFile, parseData, fn) {
-// 	let currentDate = getCurrentDate(),
-// 			currentFile = path.parse(xmlFile),
-// 			finalPath		= currentDataDirectoryPath + currentDate + currentFile.name + '.json',
-// 			jsonString	= JSON.stringify(parseData);
-
-// 	if (jsonString !== undefined) {
-// 		fs.writeFile(finalPath, jsonString, function(error) {
-// 			if (error) {
-// 				fn(error, undefined);
-// 			} else {
-// 				console.log('Success! %s saved.', currentFile.name + currentFile.ext);
-// 				return finalPath;
-// 			}
-// 		});
-// 	}
-// 	fn(undefined, finalPath);
-// }
-
-/**
- * Get file names, paths from a given directory
- * @param {String} directoryPath - Directory to read
- * @param {String} fileType - Type of file to return
- * @param {Function} readDictory - Function that reads a directory path
- * @returns {Array} - joinedFilePaths - All files that matched fileType
- * @callback
- */
-//  function getFilePaths(directoryPath, fileType, readDirectory, fn) {
-	
-// 	readDirectory(directoryPath, function(error, files) {
-// 		let joinedFilePaths = [];
-
-// 		if (error) {
-// 			fn(error, undefined);
-// 		} else {
-// 			files.map(function(file) {
-// 				return path.join(directoryPath, file);
-// 			})
-// 			.filter(function(file) {
-// 				if (getFileType(file) === fileType) {
-// 					return verifyItemIsAFile(file);
-// 				} else {
-// 					console.log(`${file} is not a ${fileType} file, moving on.`);
-// 					return false;
-// 				}
-// 			})
-// 			.forEach(function (file) {
-// 				return joinedFilePaths.push(file);
-// 			});
-// 		}
-// 		return fn(undefined, joinedFilePaths);
-// 	});
-// }
-
-/**
- * Read a directory, return array of all file paths
- * @param {String} destinationPath
- * @param {Function} readDictory - Function that reads a directory path
- * @returns {Array} joinedFilePath
- * @callback
- */
-// function arrayOfFilePaths(directoryPath, readDirectory, fn) {
-
-// 	readDirectory(directoryPath, function(error, files) {
-// 	let joinedFilePath = [];
-
-// 		if (error) {
-// 			fn(error, undefined);
-// 		} else {
-// 			files.map(function(file) {
-// 				joinedFilePath.push(path.join(directoryPath, file));
-// 			});
-// 			return joinedFilePath;
-// 		}
-// 	});
-// }
-
-/**
- * Filter
- * @param {Array} filePaths - Array of file paths to filter
- * @param {String} fileType - File extension to filter by
- * @param {Function} getFileType - Function that checks file ext
- * @param {Function} verifyItemIsAFile - Function that checks if item is a file.
- * @returns
- * @callback
- */
-// function filterFilePaths(filePaths, fileType, getFileType, verifyItemIsAFile) {
-// 	var filteredFilePaths = filePaths.filter(function(file) {
-
-// 		if (getFileType(file) === fileType) {
-// 			return verifyItemIsAFile(file)
-// 		} else {
-// 			console.log(`Item is not a ${fileType} file, moving on.`);
-// 		}
-// 	});
-// }
-
-/**
- * Verify a given item in the directory is a file.
- * @param {String} file
- * @returns {Boolean}
- */
-// function verifyItemIsAFile(file) {
-// 	return fs.statSync(file).isFile();
-// }
-
-/**
  * Copy file to working and backup directories
  * @param {String} file - A file path to read / write to the given directories
  * @member {Function} currentDate - Function that returns a date string to append to the file
@@ -267,120 +162,6 @@ function moveFile(file) {
 		});
 	});
 }
-
-/**
- * Copy file from source to destination
- * @param {String} sorceFilePath
- * @param {String} destinationPath
- * @returns
- * @callback
- */
-// function moveScheduleDataFileString(sourceFilePath, destinationPath, fn) {
-// 	let currentDate = getCurrentDate(),
-// 			currentFile = path.parse(sourceFilePath),
-// 			finalPath		= destinationPath + currentDate + currentFile.name + currentFile.ext;
-
-// 	if (fs.existsSync(sourceFilePath) === true) {
-// 		fs.readFile(sourceFilePath, function(error, data) {
-// 			if (error) {
-// 				fn(error, undefined);
-// 			} else {
-// 				fs.writeFile(finalPath, data, function(error) {
-// 					if (error) {
-// 						fn(error, undefined);
-// 					} else {
-// 						console.log('Success! %s moved to %s.', currentFile.name, destinationPath);
-// 						return finalPath;
-// 					}
-// 				});
-// 			}
-// 			fn(undefined, finalPath);
-// 		});
-// 	}
-// }
-
-/**
- * Copy file from source to destination
- * @param {Array} sorceFilePath - An array of strings to be moved
- * @param {String} destinationPath
- * @returns
- * @callback
- */
-// function moveScheduleDataFileArray(sourceFilePath, destinationPath, fn) {
-// 	let currentDate = getCurrentDate(),
-// 			filesMoved 	= [];
-
-// 	sourceFilePath.forEach(function(filePath) {
-// 		if (fs.existsSync(filePath) === true) {
-// 			fs.readFile(filePath, function(error, data) {
-// 				if (error) {
-// 					fn(error, undefined);
-// 				} else {
-// 					fs.writeFile(destinationPath + currentDate + path.basename(filePath), data, function(error, fn) {
-// 						if (error) {
-// 							fn(error, undefined);
-// 						} else {
-// 							console.log('Success! %s moved to %s.', path.basename(filePath), destinationPath);
-// 							return false;
-// 						}
-// 					});
-// 					fn(undefined, filesMoved);
-// 				}
-// 			});
-// 		}
-// 	});
-// }
-
-/**
- * Copy file from source to destination
- * @param {Array} sorceFilePath - An array of strings to be moved
- * @param {String || Array} destinationPath
- * @returns
- * @callback
- */
-// function moveRawScheduleDataFile(sourceFilePath, destinationPath, fn) {
-// 	let currentDate = getCurrentDate();
-// 			// filesMoved 	= [];
-
-// 	destinationPath.forEach(function(destPath) {
-
-// 		fs.readFile(sourceFilePath, function(error, data) {
-// 			if (error) {
-// 				console.log(error);
-// 				// fn(error, undefined);
-// 			} else {
-// 				fs.writeFile(destPath + currentDate + path.basename(sourceFilePath), data, function(error) {
-// 					if (error) {
-// 						console.log(error);
-// 						// fn(error, undefined);
-// 					} else {
-// 						console.log(`Success! ${path.basename(sourceFilePath)} moved to ${destPath}.`);
-// 						return sourceFilePath;
-// 					}
-// 				});
-// 			}
-// 		});
-// 		console.log(sourceFilePath);
-// 		return sourceFilePath;
-// 	});
-// }
-
-/**
- * Remove file from source location
- * @param {Array} sorceFilePath - An array of strings to be removed
- * @returns {String} - If all files removed, confirmation message
- * @callback
- */
-// function removeFile(sourceFilePath, fn) {
-// 	sourceFilePath.forEach(function(filePath) {
-// 		fs.unlink(filePath, function(error) {
-// 			if (error) {
-// 			console.log(error);
-// 			}
-// 			console.log(`Removed ${filePath}.`);
-// 		});
-// 	});
-// }
 
 /**
  * Remove file from source location, sync
@@ -516,27 +297,18 @@ function extractScheduleData(parseData) {
 		})
 		return [].concat.apply([], series_airings);
 	})
-	// console.log(util.inspect(fullScheduleData.concat.apply([], full_data), {showHidden:false, depth:null}));
 	return [].concat.apply([], full_data);
 }
-
 
 export {
 	createDirectoryPath,
 	verifyFilePath,
 	beginWatchingDirectory,
+	getFileType,
+	verifyItemIsAFile,
 	leadingZero,
 	getCurrentDate,
-	// saveParsedFile,
-	// moveScheduleDataFileString,
-	// moveRawScheduleDataFile,
-	// moveScheduleDataFileArray,
 	moveFile,
-	// removeFile,
 	removeSingleFile,
-	extractScheduleData,
-	getFileType,
-	// filterFilePaths,
-	// getFilePaths,
-	// verifyItemIsAFile
+	extractScheduleData
 };
