@@ -1,8 +1,11 @@
+
 import * as fs from 'fs';
 import xml2js from 'xml2js';
 
-// {{{{{{{{{{{{{{{{{{{{{{{{{ xml2js }}}}}}}}}}}}}}}}}}}}}}}}}
-
+/**
+ * Constant setting the xml2js parser options.
+ * @const
+ */
 const xml2jsParser = new xml2js.Parser({
 		ignoreAttrs: true,
 		includeWhiteChars: true,
@@ -17,6 +20,12 @@ const xml2jsParser = new xml2js.Parser({
   	}]
 	});
 
+/**
+ * Read the file at the provided path,
+ * Parse the provided file, convert to JSON.
+ * @param {String} xmlFile - A file path to be parsed
+ * @callback {Function}
+ */
 function jsonScheduleData(xmlFile, fn) {
 	fs.readFile(xmlFile, function(error, data) {
 		if (error) {
