@@ -1,5 +1,4 @@
 
-import mongodb from 'mongodb';
 import {
 	mongoDB,
 	findAll
