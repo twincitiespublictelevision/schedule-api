@@ -1,6 +1,6 @@
 
 // import Api from '../src/api.js';
-import { leadingZero } from '../src/helpers/importScheduleData.js'
+import { leadingZero } from '../src/helpers/fileInOut.js'
 
 describe('scheduleAPI helper functions', function() {
 	it('should add a leading zero before any single digit number', () => {
