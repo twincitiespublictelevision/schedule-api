@@ -172,6 +172,7 @@ function moveFile(file) {
 function removeSingleFile(filePath) {
 	fs.unlinkSync(filePath);
 }
+
 export {
 	createDirectoryPath,
 	verifyFilePath,
