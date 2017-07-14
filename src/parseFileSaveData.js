@@ -1,16 +1,12 @@
 
 import * as path from 'path';
 import { jsonScheduleData } from './helpers/convertXMLToJSON';
-
+import { extractScheduleData } from './helpers/dataTransform';
+import { removeSingleFile } from './helpers/fileInOut';
 import {
 	mongoDB,
 	removeOldInsertNew,
 	} from './database';
-
-import {
-	removeSingleFile,
-	extractScheduleData
-} from './helpers/importScheduleData';
 
 function handleFile(file) {
 	let filename = path.basename(file);

@@ -2,7 +2,7 @@
 import {
 	createDirectoryPath,
 	beginWatchingDirectory
-} from './helpers/importScheduleData';
+} from './helpers/fileInOut';
 
 createDirectoryPath(process.env.WATCH_DIR);
 
