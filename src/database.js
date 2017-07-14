@@ -1,5 +1,5 @@
+
 import mongoose from 'mongoose';
-// import mongodb from 'mongodb';
 
 const mongoURI = 'mongodb://localhost:27017/scheduleData';
 const mongoDB = mongoose.connect(mongoURI).connection;
@@ -88,12 +88,13 @@ function removeAllInsert(mongoDB, data, callback) {
  * @ member {Function} scheduleCollection - links to mongoDB collection
  */
 function removeAll(mongoDB, data, callback) {
-	let scheduleCollection = mongoDB.collection('scheudleData');
+	let scheduleCollection = mongoDB.collection('scheduleData');
 
-	scheduleCollection.remove({}, function(error) {
+	scheduleCollection.deleteMany({}, function(error) {
 		if (error) {
 			console.log(error);
 		}
+		console.log('All docuements removed.');
 	});
 }
 
