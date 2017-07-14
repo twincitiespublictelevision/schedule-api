@@ -1,10 +1,6 @@
 
-import {
-	mongoDB,
-	findAll
-} from '../database';
-
 import { Router } from 'express';
+import { mongoDB } from '../database';
 
 export default class EpisodeRouter {
 
