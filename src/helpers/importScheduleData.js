@@ -61,6 +61,15 @@ function beginWatchingDirectory(directoryPath) {
 }
 
 /**
+ * Returns the file extension of a given file
+ * @param {String} sorceFilePath
+ * @returns {String} - Returns a string representing the file extension
+ */
+function getFileType(file) {
+	return path.extname(file);
+}
+
+/**
  * Watch a given directory for changes
  * @param {String} directoryPath - path to watch
  * @return {Boolean}
@@ -121,24 +130,24 @@ function getCurrentDate() {
  * @returns {String} finalPath
  * @callback
  */
-function saveParsedFile(xmlFile, parseData, fn) {
-	let currentDate = getCurrentDate(),
-			currentFile = path.parse(xmlFile),
-			finalPath		= currentDataDirectoryPath + currentDate + currentFile.name + '.json',
-			jsonString	= JSON.stringify(parseData);
+// function saveParsedFile(xmlFile, parseData, fn) {
+// 	let currentDate = getCurrentDate(),
+// 			currentFile = path.parse(xmlFile),
+// 			finalPath		= currentDataDirectoryPath + currentDate + currentFile.name + '.json',
+// 			jsonString	= JSON.stringify(parseData);
 
-	if (jsonString !== undefined) {
-		fs.writeFile(finalPath, jsonString, function(error) {
-			if (error) {
-				fn(error, undefined);
-			} else {
-				console.log('Success! %s saved.', currentFile.name + currentFile.ext);
-				return finalPath;
-			}
-		});
-	}
-	fn(undefined, finalPath);
-}
+// 	if (jsonString !== undefined) {
+// 		fs.writeFile(finalPath, jsonString, function(error) {
+// 			if (error) {
+// 				fn(error, undefined);
+// 			} else {
+// 				console.log('Success! %s saved.', currentFile.name + currentFile.ext);
+// 				return finalPath;
+// 			}
+// 		});
+// 	}
+// 	fn(undefined, finalPath);
+// }
 
 /**
  * Get file names, paths from a given directory
@@ -148,32 +157,32 @@ function saveParsedFile(xmlFile, parseData, fn) {
  * @returns {Array} - joinedFilePaths - All files that matched fileType
  * @callback
  */
- function getFilePaths(directoryPath, fileType, readDirectory, fn) {
+//  function getFilePaths(directoryPath, fileType, readDirectory, fn) {
 	
-	readDirectory(directoryPath, function(error, files) {
-		let joinedFilePaths = [];
+// 	readDirectory(directoryPath, function(error, files) {
+// 		let joinedFilePaths = [];
 
-		if (error) {
-			fn(error, undefined);
-		} else {
-			files.map(function(file) {
-				return path.join(directoryPath, file);
-			})
-			.filter(function(file) {
-				if (getFileType(file) === fileType) {
-					return verifyItemIsAFile(file);
-				} else {
-					console.log(`${file} is not a ${fileType} file, moving on.`);
-					return false;
-				}
-			})
-			.forEach(function (file) {
-				return joinedFilePaths.push(file);
-			});
-		}
-		return fn(undefined, joinedFilePaths);
-	});
-}
+// 		if (error) {
+// 			fn(error, undefined);
+// 		} else {
+// 			files.map(function(file) {
+// 				return path.join(directoryPath, file);
+// 			})
+// 			.filter(function(file) {
+// 				if (getFileType(file) === fileType) {
+// 					return verifyItemIsAFile(file);
+// 				} else {
+// 					console.log(`${file} is not a ${fileType} file, moving on.`);
+// 					return false;
+// 				}
+// 			})
+// 			.forEach(function (file) {
+// 				return joinedFilePaths.push(file);
+// 			});
+// 		}
+// 		return fn(undefined, joinedFilePaths);
+// 	});
+// }
 
 /**
  * Read a directory, return array of all file paths
@@ -182,21 +191,21 @@ function saveParsedFile(xmlFile, parseData, fn) {
  * @returns {Array} joinedFilePath
  * @callback
  */
-function arrayOfFilePaths(directoryPath, readDirectory, fn) {
+// function arrayOfFilePaths(directoryPath, readDirectory, fn) {
 
-	readDirectory(directoryPath, function(error, files) {
-	let joinedFilePath = [];
+// 	readDirectory(directoryPath, function(error, files) {
+// 	let joinedFilePath = [];
 
-		if (error) {
-			fn(error, undefined);
-		} else {
-			files.map(function(file) {
-				joinedFilePath.push(path.join(directoryPath, file));
-			});
-			return joinedFilePath;
-		}
-	});
-}
+// 		if (error) {
+// 			fn(error, undefined);
+// 		} else {
+// 			files.map(function(file) {
+// 				joinedFilePath.push(path.join(directoryPath, file));
+// 			});
+// 			return joinedFilePath;
+// 		}
+// 	});
+// }
 
 /**
  * Filter
@@ -207,34 +216,25 @@ function arrayOfFilePaths(directoryPath, readDirectory, fn) {
  * @returns
  * @callback
  */
-function filterFilePaths(filePaths, fileType, getFileType, verifyItemIsAFile) {
-	var filteredFilePaths = filePaths.filter(function(file) {
+// function filterFilePaths(filePaths, fileType, getFileType, verifyItemIsAFile) {
+// 	var filteredFilePaths = filePaths.filter(function(file) {
 
-		if (getFileType(file) === fileType) {
-			return verifyItemIsAFile(file)
-		} else {
-			console.log(`Item is not a ${fileType} file, moving on.`);
-		}
-	});
-}
+// 		if (getFileType(file) === fileType) {
+// 			return verifyItemIsAFile(file)
+// 		} else {
+// 			console.log(`Item is not a ${fileType} file, moving on.`);
+// 		}
+// 	});
+// }
 
 /**
  * Verify a given item in the directory is a file.
  * @param {String} file
  * @returns {Boolean}
  */
-function verifyItemIsAFile(file) {
-	return fs.statSync(file).isFile();
-}
-
-/**
- * Returns the file extension of a given file
- * @param {String} sorceFilePath
- * @returns {String} - Returns a string representing the file extension
- */
-function getFileType(file) {
-	return path.extname(file);
-}
+// function verifyItemIsAFile(file) {
+// 	return fs.statSync(file).isFile();
+// }
 
 /**
  * Copy file to working and backup directories
@@ -275,29 +275,29 @@ function moveFile(file) {
  * @returns
  * @callback
  */
-function moveScheduleDataFileString(sourceFilePath, destinationPath, fn) {
-	let currentDate = getCurrentDate(),
-			currentFile = path.parse(sourceFilePath),
-			finalPath		= destinationPath + currentDate + currentFile.name + currentFile.ext;
+// function moveScheduleDataFileString(sourceFilePath, destinationPath, fn) {
+// 	let currentDate = getCurrentDate(),
+// 			currentFile = path.parse(sourceFilePath),
+// 			finalPath		= destinationPath + currentDate + currentFile.name + currentFile.ext;
 
-	if (fs.existsSync(sourceFilePath) === true) {
-		fs.readFile(sourceFilePath, function(error, data) {
-			if (error) {
-				fn(error, undefined);
-			} else {
-				fs.writeFile(finalPath, data, function(error) {
-					if (error) {
-						fn(error, undefined);
-					} else {
-						console.log('Success! %s moved to %s.', currentFile.name, destinationPath);
-						return finalPath;
-					}
-				});
-			}
-			fn(undefined, finalPath);
-		});
-	}
-}
+// 	if (fs.existsSync(sourceFilePath) === true) {
+// 		fs.readFile(sourceFilePath, function(error, data) {
+// 			if (error) {
+// 				fn(error, undefined);
+// 			} else {
+// 				fs.writeFile(finalPath, data, function(error) {
+// 					if (error) {
+// 						fn(error, undefined);
+// 					} else {
+// 						console.log('Success! %s moved to %s.', currentFile.name, destinationPath);
+// 						return finalPath;
+// 					}
+// 				});
+// 			}
+// 			fn(undefined, finalPath);
+// 		});
+// 	}
+// }
 
 /**
  * Copy file from source to destination
@@ -306,30 +306,30 @@ function moveScheduleDataFileString(sourceFilePath, destinationPath, fn) {
  * @returns
  * @callback
  */
-function moveScheduleDataFileArray(sourceFilePath, destinationPath, fn) {
-	let currentDate = getCurrentDate(),
-			filesMoved 	= [];
+// function moveScheduleDataFileArray(sourceFilePath, destinationPath, fn) {
+// 	let currentDate = getCurrentDate(),
+// 			filesMoved 	= [];
 
-	sourceFilePath.forEach(function(filePath) {
-		if (fs.existsSync(filePath) === true) {
-			fs.readFile(filePath, function(error, data) {
-				if (error) {
-					fn(error, undefined);
-				} else {
-					fs.writeFile(destinationPath + currentDate + path.basename(filePath), data, function(error, fn) {
-						if (error) {
-							fn(error, undefined);
-						} else {
-							console.log('Success! %s moved to %s.', path.basename(filePath), destinationPath);
-							return false;
-						}
-					});
-					fn(undefined, filesMoved);
-				}
-			});
-		}
-	});
-}
+// 	sourceFilePath.forEach(function(filePath) {
+// 		if (fs.existsSync(filePath) === true) {
+// 			fs.readFile(filePath, function(error, data) {
+// 				if (error) {
+// 					fn(error, undefined);
+// 				} else {
+// 					fs.writeFile(destinationPath + currentDate + path.basename(filePath), data, function(error, fn) {
+// 						if (error) {
+// 							fn(error, undefined);
+// 						} else {
+// 							console.log('Success! %s moved to %s.', path.basename(filePath), destinationPath);
+// 							return false;
+// 						}
+// 					});
+// 					fn(undefined, filesMoved);
+// 				}
+// 			});
+// 		}
+// 	});
+// }
 
 /**
  * Copy file from source to destination
@@ -338,32 +338,32 @@ function moveScheduleDataFileArray(sourceFilePath, destinationPath, fn) {
  * @returns
  * @callback
  */
-function moveRawScheduleDataFile(sourceFilePath, destinationPath, fn) {
-	let currentDate = getCurrentDate();
-			// filesMoved 	= [];
+// function moveRawScheduleDataFile(sourceFilePath, destinationPath, fn) {
+// 	let currentDate = getCurrentDate();
+// 			// filesMoved 	= [];
 
-	destinationPath.forEach(function(destPath) {
+// 	destinationPath.forEach(function(destPath) {
 
-		fs.readFile(sourceFilePath, function(error, data) {
-			if (error) {
-				console.log(error);
-				// fn(error, undefined);
-			} else {
-				fs.writeFile(destPath + currentDate + path.basename(sourceFilePath), data, function(error) {
-					if (error) {
-						console.log(error);
-						// fn(error, undefined);
-					} else {
-						console.log(`Success! ${path.basename(sourceFilePath)} moved to ${destPath}.`);
-						return sourceFilePath;
-					}
-				});
-			}
-		});
-		console.log(sourceFilePath);
-		return sourceFilePath;
-	});
-}
+// 		fs.readFile(sourceFilePath, function(error, data) {
+// 			if (error) {
+// 				console.log(error);
+// 				// fn(error, undefined);
+// 			} else {
+// 				fs.writeFile(destPath + currentDate + path.basename(sourceFilePath), data, function(error) {
+// 					if (error) {
+// 						console.log(error);
+// 						// fn(error, undefined);
+// 					} else {
+// 						console.log(`Success! ${path.basename(sourceFilePath)} moved to ${destPath}.`);
+// 						return sourceFilePath;
+// 					}
+// 				});
+// 			}
+// 		});
+// 		console.log(sourceFilePath);
+// 		return sourceFilePath;
+// 	});
+// }
 
 /**
  * Remove file from source location
@@ -371,16 +371,16 @@ function moveRawScheduleDataFile(sourceFilePath, destinationPath, fn) {
  * @returns {String} - If all files removed, confirmation message
  * @callback
  */
-function removeFile(sourceFilePath, fn) {
-	sourceFilePath.forEach(function(filePath) {
-		fs.unlink(filePath, function(error) {
-			if (error) {
-			console.log(error);
-			}
-			console.log(`Removed ${filePath}.`);
-		});
-	});
-}
+// function removeFile(sourceFilePath, fn) {
+// 	sourceFilePath.forEach(function(filePath) {
+// 		fs.unlink(filePath, function(error) {
+// 			if (error) {
+// 			console.log(error);
+// 			}
+// 			console.log(`Removed ${filePath}.`);
+// 		});
+// 	});
+// }
 
 /**
  * Remove file from source location, sync
@@ -527,16 +527,16 @@ export {
 	beginWatchingDirectory,
 	leadingZero,
 	getCurrentDate,
-	saveParsedFile,
-	moveScheduleDataFileString,
-	moveRawScheduleDataFile,
-	moveScheduleDataFileArray,
+	// saveParsedFile,
+	// moveScheduleDataFileString,
+	// moveRawScheduleDataFile,
+	// moveScheduleDataFileArray,
 	moveFile,
-	removeFile,
+	// removeFile,
 	removeSingleFile,
 	extractScheduleData,
 	getFileType,
-	filterFilePaths,
-	getFilePaths,
-	verifyItemIsAFile
+	// filterFilePaths,
+	// getFilePaths,
+	// verifyItemIsAFile
 };
