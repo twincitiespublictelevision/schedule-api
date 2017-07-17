@@ -22,9 +22,12 @@ export default class AiringRouter {
 	 */
 	getAllAirings(request, response) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
+		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find()
-		.limit( 20 )
+		.limit( requestedLimit )
+		.skip( requestedSkip )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
@@ -46,11 +49,14 @@ export default class AiringRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let channel = request.params.channel;
 		let requestedChannel = channel === '2' ? parseInt(channel) : channel;
+		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find( {
 			'schedule.schedule_channel' : requestedChannel
 		} )
-		.limit( 10 )
+		.limit( requestedLimit )
+		.skip( requestedSkip )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
@@ -71,11 +77,12 @@ export default class AiringRouter {
 	getAiringsByDate(request, response) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let requestedDate = request.params.date;
+		let requestedLimit = parseInt(request.query.limit);
 
 		scheduleCollection.find( {
 			'schedule.schedule_date' : { '$eq' : new Date(requestedDate) }
 		} )
-		.limit( 10 )
+		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
@@ -97,13 +104,14 @@ export default class AiringRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
+		let requestedLimit = parseInt(request.query.limit);
 		
 		scheduleCollection.find( {
     	'schedule.schedule_date' : {
     		'$gte' : new Date(requestedStartDate),
     		'$lte' : new Date(requestedEndDate) }
        } )
-		.limit( 10 )
+		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
@@ -124,11 +132,13 @@ export default class AiringRouter {
 	getAiringsByGenreCode(request, response) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let genreCode = request.params.genreCode;
+		let requestedLimit = parseInt(request.query.limit);
+
 
 		scheduleCollection.find( {
 			'episode.epi_genrelist_nat.0.genrecd' : genreCode
 		} )
-		.limit( 10 )
+		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);

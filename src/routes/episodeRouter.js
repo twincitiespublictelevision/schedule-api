@@ -23,11 +23,12 @@ export default class EpisodeRouter {
 	getEpisodeById(request, response) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let episodeID = parseInt(request.params.id);
+		let requestedLimit = parseInt(request.query.limit);
 
 		scheduleCollection.find( {
 			'episode.program_id' : episodeID
 		} )
-		.limit( 10 )
+		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
@@ -49,12 +50,13 @@ export default class EpisodeRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let episodeID = parseInt(request.params.id);
 		let versionID = parseInt(request.params.versionID);
+		let requestedLimit = parseInt(request.query.limit);
 
 		scheduleCollection.find( { $and: [
 			{ 'episode.program_id' : episodeID },
 			{ 'episode.version_id' : versionID }
 			] } )
-		.limit( 10 )
+		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
@@ -76,12 +78,13 @@ export default class EpisodeRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let episodeID = parseInt(request.params.id);
 		let requestedDate = request.params.date;
+		let requestedLimit = parseInt(request.query.limit);
 
 		scheduleCollection.find( { $and : [
 			{ 'episode.program_id' : episodeID },
 			{ 'schedule.schedule_date' : { '$eq' : new Date(requestedDate) } }
 		] } )
-		.limit( 10 )
+		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
@@ -110,6 +113,7 @@ export default class EpisodeRouter {
 		let episodeID = parseInt(request.params.id);
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
+		let requestedLimit = parseInt(request.query.limit);
 
 
 		// let dateRegex = /^\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\dZ$/;
@@ -140,7 +144,7 @@ export default class EpisodeRouter {
 					'$gte' : new Date(requestedStartDate),
 					'$lte' : new Date(requestedEndDate) } }
 	       ] } )
-			.limit( 10 )
+			.limit( requestedLimit )
 			.toArray(function(error, docs) {
 				if (error) {
 					console.log(error);
