@@ -15,9 +15,10 @@
 1. `git clone https://github.com/twincitiespublictelevision/schedule-api.git`
 2. Run `npm install` to install the project dependencies
 4. Set up a directory for the watch, working, and backup directories
-5. Set up MongoDB with the username, password, and collection (database) name
-6. Create a config file based on `.example.env` file (see below)
-7. Launch the server / API using `npm start`
+5. Set up a directory / files for the server and application logs
+6. Set up MongoDB with the username, password, and collection (database) name
+7. Create a config file based on `.example.env` file (see below)
+8. Launch the server / API using `npm start`
 
 ## Tests
 
@@ -44,7 +45,8 @@ A sample config file is supplied in `.example.env`
 
 | Option             | Value                                                |
 | ------------------ | ---------------------------------------------        |
-| SERVER_PORT        | Port the server will listen on                       |
+| HTTP\_SERVER_PORT   | Port the http server will listen on                  |
+| HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
 | WATCH_DIR          | Path to the directory where initial files are placed |
 | WORKING_DIR        | Path to the directory where the files are processed  |
 | BACKUP_DIR         | Path to the directory where backup files are stored  |
