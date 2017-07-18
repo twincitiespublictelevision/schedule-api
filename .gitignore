@@ -1,6 +1,10 @@
 # Miscellaneous
 .DS_Store
 __scratch.js
+/sslCert
+.crt
+.key
+server.csr
 
 # Logs
 *.log
