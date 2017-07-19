@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 
 const mongoURI = 'mongodb://localhost:27017/scheduleData';
-const mongoDB = mongoose.connect(mongoURI).connection;
+const mongoDB = mongoose.connect(mongoURI, { server: { ssl: true }}).connection;
 
 /**
  * Event listener for error when conneting to the database.
