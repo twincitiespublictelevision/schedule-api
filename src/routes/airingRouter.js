@@ -26,8 +26,8 @@ export default class AiringRouter {
 		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find()
-		.limit( requestedLimit )
 		.skip( requestedSkip )
+		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
@@ -55,8 +55,8 @@ export default class AiringRouter {
 		scheduleCollection.find( {
 			'schedule.schedule_channel' : requestedChannel
 		} )
-		.limit( requestedLimit )
 		.skip( requestedSkip )
+		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
 				console.log(error);
@@ -78,10 +78,12 @@ export default class AiringRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let requestedDate = request.params.date;
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find( {
 			'schedule.schedule_date' : { '$eq' : new Date(requestedDate) }
 		} )
+		.skip( requestedSkip )
 		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
@@ -105,12 +107,14 @@ export default class AiringRouter {
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 		
 		scheduleCollection.find( {
     	'schedule.schedule_date' : {
     		'$gte' : new Date(requestedStartDate),
     		'$lte' : new Date(requestedEndDate) }
        } )
+		.skip( requestedSkip )
 		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
@@ -133,11 +137,13 @@ export default class AiringRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let genreCode = request.params.genreCode;
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 
 		scheduleCollection.find( {
 			'episode.epi_genrelist_nat.0.genrecd' : genreCode
 		} )
+		.skip( requestedSkip )
 		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {

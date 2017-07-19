@@ -24,10 +24,12 @@ export default class SeriesRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let seriesID = parseInt(request.params.id);
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find( {
 			'series.series_id' : seriesID
 		} )
+		.skip( requestedSkip )
 		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
@@ -51,11 +53,13 @@ export default class SeriesRouter {
 		let seriesID = parseInt(request.params.id);
 		let requestedDate = request.params.date;
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find( { $and : [
 			{ 'series.series_id' : seriesID },
 			{ 'schedule.schedule_date' : { '$eq' : requestedDate } }
 			] } )
+		.skip( requestedSkip )
 		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
@@ -80,6 +84,7 @@ export default class SeriesRouter {
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find( { $and : [
 			{ 'series.series_id' : seriesID },
@@ -88,6 +93,7 @@ export default class SeriesRouter {
 				'$lte' : requestedEndDate }
 			}
        ] } )
+		.skip( requestedSkip )
 		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {

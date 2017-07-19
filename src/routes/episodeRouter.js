@@ -24,10 +24,12 @@ export default class EpisodeRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let episodeID = parseInt(request.params.id);
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find( {
 			'episode.program_id' : episodeID
 		} )
+		.skip( requestedSkip )
 		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
@@ -51,11 +53,13 @@ export default class EpisodeRouter {
 		let episodeID = parseInt(request.params.id);
 		let versionID = parseInt(request.params.versionID);
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find( { $and: [
 			{ 'episode.program_id' : episodeID },
 			{ 'episode.version_id' : versionID }
 			] } )
+		.skip( requestedSkip )
 		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
@@ -79,11 +83,13 @@ export default class EpisodeRouter {
 		let episodeID = parseInt(request.params.id);
 		let requestedDate = request.params.date;
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 		scheduleCollection.find( { $and : [
 			{ 'episode.program_id' : episodeID },
 			{ 'schedule.schedule_date' : { '$eq' : new Date(requestedDate) } }
 		] } )
+		.skip( requestedSkip )
 		.limit( requestedLimit )
 		.toArray(function(error, docs) {
 			if (error) {
@@ -114,6 +120,7 @@ export default class EpisodeRouter {
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
 		let requestedLimit = parseInt(request.query.limit);
+		let requestedSkip = parseInt(request.query.skip);
 
 
 		// let dateRegex = /^\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\dZ$/;
@@ -144,6 +151,7 @@ export default class EpisodeRouter {
 					'$gte' : new Date(requestedStartDate),
 					'$lte' : new Date(requestedEndDate) } }
 	       ] } )
+			.skip( requestedSkip )
 			.limit( requestedLimit )
 			.toArray(function(error, docs) {
 				if (error) {
