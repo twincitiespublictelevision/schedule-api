@@ -1,8 +1,10 @@
 
 import mongoose from 'mongoose';
 
-const mongoURI = 'mongodb://localhost:27017/scheduleData';
-const mongoDB = mongoose.connect(mongoURI, { server: { ssl: true }}).connection;
+const mongoURI = `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+const mongoDB = (process.env.ENABLE_TLS_SSL === 'true') ?
+mongoose.connect(mongoURI, { server: { ssl: true }}).connection :
+mongoose.connect(mongoURI).connection;
 
 /**
  * Event listener for error when conneting to the database.
