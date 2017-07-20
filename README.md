@@ -45,11 +45,22 @@ A sample config file is supplied in `.example.env`
 
 | Option             | Value                                                |
 | ------------------ | ---------------------------------------------        |
-| HTTP\_SERVER_PORT   | Port the http server will listen on                  |
-| HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
 | WATCH_DIR          | Path to the directory where initial files are placed |
 | WORKING_DIR        | Path to the directory where the files are processed  |
 | BACKUP_DIR         | Path to the directory where backup files are stored  |
+
+### Server Connection
+
+| Option             | Value                                                |
+| ------------------ | ---------------------------------------------        |
+| DEFAULT_PORT       | The default port the http server will listen on      |
+| HTTP\_SERVER_PORT   | Port the http server will listen on                  |
+| HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
+| HTTPS_PRIVATEKEY    | Path to the directory where the private key file is saved |
+| HTTPS_CERTIFICATE   | Path to the directory where the certificate file is saved |
+| ENABLE\_TLS_SSL      | Option to enable or disable a secure connection     |
+| HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
+| HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
 
 ### Database
 
