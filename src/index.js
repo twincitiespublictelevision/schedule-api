@@ -1,8 +1,8 @@
 
-import * as fs 		from 'fs';
-import * as http 	from 'http';
+import * as fs    from 'fs';
+import * as http  from 'http';
 import * as https from 'https';
-import Api 				from './api';
+import Api        from './api';
 import {
 	databaseConnectionError,
 	databaseConnection
@@ -19,8 +19,8 @@ const httpsCredentials = {key: httpsPrivateKey, cert: httpsCertificate};
 
 // Server Connection
 
-const server 	= (process.env.ENABLE_TLS_SSL === 'true') ? https.createServer(httpsCredentials, app.express) : http.createServer(app.express);
-const port 		= (process.env.ENABLE_TLS_SSL === 'true') ? normalizePort(process.env.HTTPS_SERVER_PORT) : normalizePort(process.env.HTTP_SERVER_PORT);
+const server = (process.env.ENABLE_TLS_SSL === 'true') ? https.createServer(httpsCredentials, app.express) : http.createServer(app.express);
+const port   = (process.env.ENABLE_TLS_SSL === 'true') ? normalizePort(process.env.HTTPS_SERVER_PORT) : normalizePort(process.env.HTTP_SERVER_PORT);
 
 // DB Connection
 
