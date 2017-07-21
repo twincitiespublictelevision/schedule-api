@@ -17,6 +17,7 @@
 4. Set up a directory for the watch, working, and backup directories
 5. Set up a directory / files for the server and application logs
 6. Set up MongoDB with the username, password, and collection (database) name
+ * Ensure the database connection is using TSL/SSL if the HTTPS config option is set to `true`.
 7. Create a config file based on `.example.env` file (see below)
 8. Launch the server / API using `npm start`
 
