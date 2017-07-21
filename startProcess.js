@@ -1,8 +1,8 @@
 
-import * as util from 'util';
-import * as child_process from 'child_process';
+import * as util             from 'util';
+import * as child_process    from 'child_process';
 
-import { moveFile } from './helpers/fileInOut';
+import { moveFile }          from './helpers/fileInOut';
 import { parseFileSaveData } from './parseFileSaveData';
 
 let spawn = child_process.spawn;
@@ -72,10 +72,6 @@ watchBaseDir.on('uncaughtException', (error) => {
   console.log(`Watch Base Directory PID ${watchBaseDir.pid} exiting; Uncaught exception. \n${error}.\n`);
 });
 
-watchBaseDir.on('ReferenceError', (error) => {
-  console.log(`Watch Base Directory PID ${watchBaseDir.pid} exiting; Reference error. \n${error}.\n`);
-});
-
 // Launch directory monitor on WORKING_DIR, listen on Standard In for messages.
 
 const watchWorkingDir = spawn('node', ['build/watchWorkingDir.js'], {
@@ -111,8 +107,4 @@ watchWorkingDir.on('close', (code) => {
 
 watchWorkingDir.on('uncaughtException', (error) => {
   console.log(`Watch Working Directory PID ${watchWorkingDir.pid} exiting; Uncaught exception. \n${error}.\n`);
-});
-
-watchWorkingDir.on('ReferenceError', (error) => {
-  console.log(`Watch Working Directory PID ${watchWorkingDir.pid} exiting; Reference error. \n${error}.\n`);
 });
