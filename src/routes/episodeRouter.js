@@ -13,6 +13,16 @@ export default class EpisodeRouter {
 	}
 
 	/**
+	 * Handler used to isolate and enable testing of the core getEpisodeById function
+	 * @ param {Object} mongoDB - the object representing the database
+	 */
+	getEpisodeByIdHandler(mongoDB) {
+		return function(request, response) {
+			return this.getEpisodeById(request, response, mongoDB);
+		}.bind(this);
+	}
+
+	/**
 	 * Return an episode by its ID number
 	 * @description example URL - http://localhost:3000/api/v1/episodes/277918
 	 * @ param {String} request - the request string
@@ -20,7 +30,7 @@ export default class EpisodeRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getEpisodeById(request, response) {
+	getEpisodeById(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let episodeID = parseInt(request.params.id);
 		let requestedLimit = parseInt(request.query.limit);
@@ -41,6 +51,16 @@ export default class EpisodeRouter {
 	}
 
 	/**
+	 * Handler used to isolate and enable testing of the core getEpisodeByEpisodeVersionId function
+	 * @ param {Object} mongoDB - the object representing the database
+	 */
+	getEpisodeByEpisodeVersionIdHandler(mongoDB) {
+		return function(request, response) {
+			return this.getEpisodeByEpisodeVersionId(request, response, mongoDB);
+		}.bind(this);
+	}
+
+	/**
 	 * Return a version of an episode by its version ID number
 	 * @description example URL - http://localhost:3000/api/v1/episodes/292098/version/331883
 	 * @ param {String} request - the request string
@@ -48,7 +68,7 @@ export default class EpisodeRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getEpisodeByEpisodeVersionId(request, response) {
+	getEpisodeByEpisodeVersionId(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let episodeID = parseInt(request.params.id);
 		let versionID = parseInt(request.params.versionID);
@@ -71,6 +91,16 @@ export default class EpisodeRouter {
 	}
 
 	/**
+	 * Handler used to isolate and enable testing of the core getEpisodeByDate function
+	 * @ param {Object} mongoDB - the object representing the database
+	 */
+	getEpisodeByDateHandler(mongoDB) {
+		return function(request, response) {
+			return this.getEpisodeByDate(request, response, mongoDB);
+		}.bind(this);
+	}
+
+	/**
 	 * Return all episodes airing on a specific date
 	 * @description example URL - $eq - http://localhost:3000/api/v1/episodes/292098/date/2017-05-04T16:30:00
 	 * @ param {String} request - the request string
@@ -78,7 +108,7 @@ export default class EpisodeRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getEpisodeByDate(request, response) {
+	getEpisodeByDate(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let episodeID = parseInt(request.params.id);
 		let requestedDate = request.params.date;
@@ -100,11 +130,15 @@ export default class EpisodeRouter {
 		});
 	}
 
-	// getEpisodeByDateRangeHandler(mongo) {
-	// 	return function(request, response) {
-	// 		return this.getEpisodeByDateRange(request, response, mongo);
-	// 	}
-	// }
+	/**
+	 * Handler used to isolate and enable testing of the core getEpisodeByDateRange function
+	 * @ param {Object} mongoDB - the object representing the database
+	 */
+	getEpisodeByDateRangeHandler(mongoDB) {
+		return function(request, response) {
+			return this.getEpisodeByDateRange(request, response, mongoDB);
+		}.bind(this);
+	}
 
 	/**
 	 * Return all episodes airing on a specific date
@@ -114,36 +148,13 @@ export default class EpisodeRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getEpisodeByDateRange(request, response) {
+	getEpisodeByDateRange(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let episodeID = parseInt(request.params.id);
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
 		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
-
-
-		// let dateRegex = /^\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\dZ$/;
-		// let invalidFields = [];
-
-		// if (requestedStartDate.search(dateRegex) === -1) {
-		// 	invalidFields.push('startdate');
-		// }
-
-		// if (requestedEndDate.search(dateRegex) === -1) {
-		// 	invalidFields.push('enddate');
-		// }
-
-		// if (invalidFields.length > 0) {
-		// 	response.status(400)
-		// 	.json({
-		// 		error: {
-		// 			code: 1234,
-		// 			message: 'Bad / Malformed Request',
-		// 			description: invalidFields
-		// 		}
-		// 	});
-		// } else {
 
 			scheduleCollection.find( { $and : [
 				{ 'episode.program_id' : episodeID },
@@ -167,9 +178,9 @@ export default class EpisodeRouter {
 	 * Attach route handlers to their endopoints
 	 */
 	init() {
-		this.router.get('/:id', this.getEpisodeById);
-		this.router.get('/:id/version/:versionID', this.getEpisodeByEpisodeVersionId);
-		this.router.get('/:id/date/:date', this.getEpisodeByDate);
-		this.router.get('/:id/startdate/:startDate/enddate/:endDate', this.getEpisodeByDateRange);
+		this.router.get('/:id', this.getEpisodeByIdHandler(mongoDB));
+		this.router.get('/:id/version/:versionID', this.getEpisodeByEpisodeVersionIdHandler(mongoDB));
+		this.router.get('/:id/date/:date', this.getEpisodeByDateHandler(mongoDB));
+		this.router.get('/:id/startdate/:startDate/enddate/:endDate', this.getEpisodeByDateRangeHandler(mongoDB));
 	}
 }

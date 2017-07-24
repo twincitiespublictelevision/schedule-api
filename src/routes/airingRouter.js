@@ -13,6 +13,16 @@ export default class AiringRouter {
 	}
 
 	/**
+	 * Handler used to isolate and enable testing of the core getAllAirings function
+	 * @ param {Object} mongoDB - the object representing the database
+	 */
+	getAllAiringsHandler(mongoDB) {
+		return function(request, response) {
+			return this.getAllAirings(request, response, mongoDB);
+		}.bind(this);
+	}
+
+	/**
 	 * Return all airings
 	 * @description example URL - http://localhost:3000/api/v1/airings/
 	 * @ param {String} request - the request string
@@ -20,7 +30,7 @@ export default class AiringRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getAllAirings(request, response) {
+	getAllAirings(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
@@ -38,6 +48,16 @@ export default class AiringRouter {
 	}
 
 	/**
+	 * Handler used to isolate and enable testing of the core getAllAiringsByChannel function
+	 * @ param {Object} mongoDB - the object representing the database
+	 */
+	getAiringsByChannelHandler(mongoDB) {
+		return function(request, response) {
+			return this.getAiringsByChannel(request, response, mongoDB);
+		}.bind(this);
+	}
+
+	/**
 	 * Return all airings for a given channel
 	 * @description example URL - $eq - http://localhost:3000/api/v1/airings/channel/TPTKIDS
 	 * @ param {String} request - the request string
@@ -45,7 +65,7 @@ export default class AiringRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getAiringsByChannel(request, response) {
+	getAiringsByChannel(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let channel = request.params.channel;
 		let requestedChannel = channel === '2' ? parseInt(channel) : channel;
@@ -67,6 +87,16 @@ export default class AiringRouter {
 	}
 
 	/**
+	 * Handler used to isolate and enable testing of the core getAllAiringsByDate function
+	 * @ param {Object} mongoDB - the object representing the database
+	 */
+	getAiringsByDateHandler(mongoDB) {
+		return function(request, response) {
+			return this.getAiringsByDate(request, respionse, mongoDB);
+		}.bind(this);
+	}
+
+	/**
 	 * Return all airings for a given date
 	 * @description example URL - $eq - http://localhost:3000/api/v1/airings/date/2017-05-04T16:30:00
 	 * @ param {String} request - the request string
@@ -74,7 +104,7 @@ export default class AiringRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getAiringsByDate(request, response) {
+	getAiringsByDate(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let requestedDate = request.params.date;
 		let requestedLimit = parseInt(request.query.limit);
@@ -95,6 +125,16 @@ export default class AiringRouter {
 	}
 
 	/**
+	 * Handler used to isolate and enable testing of the core getAllAiringsByDateRange function
+	 * @ param {Object} mongoDB - the object representing the database
+	 */
+	getAiringsByDateRangeHandler(mongoDB) {
+		return function(request, response) {
+			return this.getAiringsByDateRange(request, response, mongoDB);
+		}.bind(this);
+	}
+
+	/**
 	 * Return all airings within a give range of dates
 	 * @description example URL - http://localhost:3000/api/v1/airings/startdate/2017-05-04T16:30:00Z/enddate/2017-05-28T16:30:00Z
 	 * @ param {String} request - the request string
@@ -102,7 +142,7 @@ export default class AiringRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getAiringsByDateRange(request, response) {
+	getAiringsByDateRange(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
@@ -126,6 +166,16 @@ export default class AiringRouter {
 	}
 
 	/**
+	 * Handler used to isolate and enable testing of the core getAllAiringsByGenre function
+	 * @ param {Object} mongoDB - the object representing the database
+	 */
+	getAiringsByGenreCodeHandler(mongoDB) {
+		return function(request, response) {
+			return this.getAiringsByGenreCode(request, response, mongoDB);
+		}.bind(this);
+	}
+
+	/**
 	 * Return all airings within a give range of dates
 	 * @description example URL - http://localhost:3000/api/v1/airings/genre/CH
 	 * @ param {String} request - the request string
@@ -133,7 +183,7 @@ export default class AiringRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getAiringsByGenreCode(request, response) {
+	getAiringsByGenreCode(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let genreCode = request.params.genreCode;
 		let requestedLimit = parseInt(request.query.limit);
@@ -158,10 +208,10 @@ export default class AiringRouter {
 	 * Attach route handlers to their endopoints
 	 */
 	init() {
-		this.router.get('/', this.getAllAirings);
-		this.router.get('/channel/:channel', this.getAiringsByChannel);
-		this.router.get('/date/:date', this.getAiringsByDate);
-		this.router.get('/startdate/:startDate/enddate/:endDate', this.getAiringsByDateRange);
-		this.router.get('/genre/:genreCode', this.getAiringsByGenreCode);
+		this.router.get('/', this.getAllAiringsHandler(mongoDB));
+		this.router.get('/channel/:channel', this.getAiringsByChannelHandler(mongoDB));
+		this.router.get('/date/:date', this.getAiringsByDateHandler(mongoDB));
+		this.router.get('/startdate/:startDate/enddate/:endDate', this.getAiringsByDateRangeHandler(mongoDB));
+		this.router.get('/genre/:genreCode', this.getAiringsByGenreCodeHandler(mongoDB));
 	}
 }
