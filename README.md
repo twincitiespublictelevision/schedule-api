@@ -59,7 +59,7 @@ A sample config file is supplied in `.example.env`
 | HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
 | HTTPS_PRIVATEKEY    | Path to the directory where the private key file is saved |
 | HTTPS_CERTIFICATE   | Path to the directory where the certificate file is saved |
-| ENABLE\_TLS_SSL      | Option to enable or disable a secure connection     |
+| ENABLE\_TLS_SSL      | True / False - Option to enable or disable a secure connection     |
 | HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
 | HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
 
