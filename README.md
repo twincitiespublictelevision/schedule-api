@@ -8,7 +8,7 @@
 ## Requirements
 
 1. [Node](https://nodejs.org/) - schedule-api is built in JavaScript and runs on [Node](https://nodejs.org/en/). As such, you will need to have it installed to run the API.  The [NPM](https://www.npmjs.com) command line tool is bundled with Node, so once installed you'll have access to it as well.
-2. [MongoDB](https://www.mongodb.com/) - schedule-api uses [MongoDB](https://www.mongodb.com/) to store schedule data and associated information.
+2. [MongoDB](https://www.mongodb.com/) - schedule-api uses [MongoDB](https://www.mongodb.com/) to store schedule data and associated information.  You will need an instance of Mongo setup and properly configured to use this API.
 
 ## Installation
 
@@ -18,7 +18,8 @@
 5. Set up a directory / files for the server and application logs
 6. Set up MongoDB with the username, password, and collection (database) name
  * Ensure the database connection is using TSL/SSL if the HTTPS config option is set to `true`.
-7. Create a config file based on `.example.env` file (see below)
+7. Create a config file based on the `.example.env` file (see the [Configuration](#configuration-options) section below).
+ * e.g. `cp .example.env .env`
 8. Launch the server / API using `npm start`
 
 ## Tests
@@ -38,7 +39,7 @@ The build framework used in this project is [Gulp](http://gulpjs.com).
 Running `gulp build` will compile all the JavaScript and begin watching the project for changes.
 
 
-## Configuration
+## Configuration Options
 
 A sample config file is supplied in `.example.env`
 
