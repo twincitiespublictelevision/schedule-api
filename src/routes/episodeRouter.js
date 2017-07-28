@@ -154,19 +154,21 @@ export default class EpisodeRouter {
 		let episodeID = parseInt(request.params.id);
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
-		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
+		let requestedLimit = parseInt(request.query.limit);
 
 		// Request values validation
 		let verify = new Validator();
-		let startDateIsValid = verify.checkDate(requestedStartDate);
-		let endDateIsValid = verify.checkDate(requestedEndDate);
-		let episodeIdIsValid = verify.checkInteger(request.params.id);
+		let startDateIsValid = verify.checkDateFormat(requestedStartDate);
+		let endDateIsValid = verify.checkDateFormat(requestedEndDate);
+		let episodeIdIsValid = verify.checkResponseIsNumber(request.params.id);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
 
 		let requestErrors = [];
 
 		if (!episodeIdIsValid) {
-			requestErrors.push(verify.invalidParameterMessage('episodeID'))
+			requestErrors.push(verify.invalidParameterMessage('episodeID'));
 		}
 
 		if (!startDateIsValid) {
@@ -177,12 +179,26 @@ export default class EpisodeRouter {
 			requestErrors.push(verify.invalidDateStringMessage('endDate'));
 		}
 
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
 		if (requestErrors.length !== 0) {
 			requestErrors.join('\n');
 			response.status(400);
-			response.send(requestErrors);
+			response.send( {
+				error: requestErrors,
+				results: []
+			} );
 		} else {
-
 			scheduleCollection.find( { $and : [
 				{ 'episode.program_id' : episodeID },
 				{ 'schedule.schedule_date' : {
@@ -195,16 +211,18 @@ export default class EpisodeRouter {
 				if (docs.length === 0) {
 					response.status(200);
 					response.send( {
-						"results": [],
-						"Information_line1": "The query was valid, but returned no data.",
-						"Information_line2": "Verify the query and parameters used and try again."
+						error: 'The query was valid, but returned no data.',
+						results: docs
 					});
 				} else {
 					if (error) {
 						console.log(error);
 					}
 					response.status(200)
-					.json(docs);
+					response.send( {
+						error: '',
+						results: docs
+					});
 				}
 			})
 		}
