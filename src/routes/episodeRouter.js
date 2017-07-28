@@ -1,6 +1,7 @@
 
-import { Router } from 'express';
+import { Router }  from 'express';
 import { mongoDB } from '../database';
+import Validator   from '../helpers/requestValidator';
 
 export default class EpisodeRouter {
 
@@ -156,6 +157,32 @@ export default class EpisodeRouter {
 		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
 
+		// Request values validation
+		let verify = new Validator();
+		let startDateIsValid = verify.checkDate(requestedStartDate);
+		let endDateIsValid = verify.checkDate(requestedEndDate);
+		let episodeIdIsValid = verify.checkInteger(request.params.id);
+
+		let requestErrors = [];
+
+		if (!episodeIdIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('episodeID'))
+		}
+
+		if (!startDateIsValid) {
+			requestErrors.push(verify.invalidDateStringMessage('startDate'));
+		}
+
+		if (!endDateIsValid) {
+			requestErrors.push(verify.invalidDateStringMessage('endDate'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send(requestErrors);
+		} else {
+
 			scheduleCollection.find( { $and : [
 				{ 'episode.program_id' : episodeID },
 				{ 'schedule.schedule_date' : {
@@ -165,14 +192,23 @@ export default class EpisodeRouter {
 			.skip( requestedSkip )
 			.limit( requestedLimit )
 			.toArray(function(error, docs) {
-				if (error) {
-					console.log(error);
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						"results": [],
+						"Information_line1": "The query was valid, but returned no data.",
+						"Information_line2": "Verify the query and parameters used and try again."
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					.json(docs);
 				}
-				response.status(200)
-				.json(docs);
-			});
+			})
 		}
-	// }
+	}
 
 	/**
 	 * Attach route handlers to their endopoints
