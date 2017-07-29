@@ -37,18 +37,62 @@ export default class EpisodeRouter {
 		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
 
-		scheduleCollection.find( {
-			'episode.program_id' : episodeID
-		} )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		// Request values validation
+		let verify = new Validator();
+		let episodeIdIsValid = verify.checkResponseIsNumber(request.params.id);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!episodeIdIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('episodeID'));
+		}
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( {
+				'episode.program_id' : episodeID
+			} )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -76,19 +120,68 @@ export default class EpisodeRouter {
 		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
 
-		scheduleCollection.find( { $and: [
-			{ 'episode.program_id' : episodeID },
-			{ 'episode.version_id' : versionID }
-			] } )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		// Request values validation
+		let verify = new Validator();
+		let episodeIdIsValid = verify.checkResponseIsNumber(request.params.id);
+		let versionIdIsValid = verify.checkResponseIsNumber(request.params.versionID);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!episodeIdIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('episodeID'));
+		}
+
+		if (!versionIdIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('versionID'));
+		}
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( { $and: [
+				{ 'episode.program_id' : episodeID },
+				{ 'episode.version_id' : versionID }
+				] } )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -116,19 +209,68 @@ export default class EpisodeRouter {
 		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
 
-		scheduleCollection.find( { $and : [
-			{ 'episode.program_id' : episodeID },
-			{ 'schedule.schedule_date' : { '$eq' : new Date(requestedDate) } }
-		] } )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		// Request values validation
+		let verify = new Validator();
+		let requestedDateIsValid = verify.checkDateFormat(requestedDate);
+		let episodeIdIsValid = verify.checkResponseIsNumber(request.params.id);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!episodeIdIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('episodeID'));
+		}
+
+		if (!requestedDateIsValid) {
+			requestErrors.push(verify.invalidDateStringMessage('requestedDate'));
+		}
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( { $and : [
+				{ 'episode.program_id' : episodeID },
+				{ 'schedule.schedule_date' : { '$eq' : new Date(requestedDate) } }
+			] } )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -146,6 +288,7 @@ export default class EpisodeRouter {
 	 * @description example URL - http://localhost:3000/api/v1/episodes/292104/startdate/2017-05-04T16:30:00Z/enddate/2017-05-28T16:30:00Z
 	 * @ param {String} request - the request string
 	 * @ param {String} response - the response string
+	 * @ param {Object} mongoDB - the mongoDB database
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
@@ -197,7 +340,7 @@ export default class EpisodeRouter {
 			response.send( {
 				error: requestErrors,
 				results: []
-			} );
+			});
 		} else {
 			scheduleCollection.find( { $and : [
 				{ 'episode.program_id' : episodeID },
@@ -224,7 +367,7 @@ export default class EpisodeRouter {
 						results: docs
 					});
 				}
-			})
+			});
 		}
 	}
 
