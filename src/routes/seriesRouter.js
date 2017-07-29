@@ -1,6 +1,7 @@
 
-import { Router } from 'express';
+import { Router }  from 'express';
 import { mongoDB } from '../database';
+import Validator   from '../helpers/requestValidator';
 
 export default class SeriesRouter {
 
@@ -30,24 +31,68 @@ export default class SeriesRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getSeriesById(request, response) {
+	getSeriesById(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let seriesID = parseInt(request.params.id);
-		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
+		let requestedLimit = parseInt(request.query.limit);
 
-		scheduleCollection.find( {
-			'series.series_id' : seriesID
-		} )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		// Request values validation
+		let verify = new Validator();
+		let seriesIdIsValid = verify.checkResponseIsNumber(request.params.id);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!seriesIdIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('seriesID'));
+		}
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( {
+				'series.series_id' : seriesID
+			} )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -72,22 +117,71 @@ export default class SeriesRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let seriesID = parseInt(request.params.id);
 		let requestedDate = request.params.date;
-		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
+		let requestedLimit = parseInt(request.query.limit);
 
-		scheduleCollection.find( { $and : [
-			{ 'series.series_id' : seriesID },
-			{ 'schedule.schedule_date' : { '$eq' : new Date(requestedDate) } }
-			] } )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		// Request values validation
+		let verify = new Validator();
+		let seriesIdIsValid = verify.checkResponseIsNumber(request.params.id);
+		let requestedDateIsValid = verify.checkDateFormat(requestedDate);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!seriesIdIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('seriesID'));
+		}
+
+		if (!requestedDateIsValid) {
+			requestErrors.push(verify.invalidDateStringMessage('requestedDate'));
+		}
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( { $and : [
+				{ 'series.series_id' : seriesID },
+				{ 'schedule.schedule_date' : { '$eq' : new Date(requestedDate) } }
+				] } )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -108,30 +202,84 @@ export default class SeriesRouter {
 	 * @ member {Function} scheduleCollection - links to mongoDB collection
 	 * @ external {}
 	 */
-	getSeriesByDateRange(request, response) {
+	getSeriesByDateRange(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let seriesID = parseInt(request.params.id);
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
-		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
+		let requestedLimit = parseInt(request.query.limit);
 
-		scheduleCollection.find( { $and : [
-			{ 'series.series_id' : seriesID },
-			{ 'schedule.schedule_date' : {
-				'$gte' : requestedStartDate,
-				'$lte' : requestedEndDate }
-			}
-       ] } )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		// Request values validation
+		let verify = new Validator();
+		let seriesIdIsValid = verify.checkResponseIsNumber(request.params.id);
+		let startDateIsValid = verify.checkDateFormat(requestedStartDate);
+		let endDateIsValid = verify.checkDateFormat(requestedEndDate);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!seriesIdIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('seriesID'));
+		}
+
+		if (!startDateIsValid) {
+			requestErrors.push(verify.invalidDateStringMessage('startDate'));
+		}
+
+		if (!endDateIsValid) {
+			requestErrors.push(verify.invalidDateStringMessage('endDate'));
+		}
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( { $and : [
+				{ 'series.series_id' : seriesID },
+				{ 'schedule.schedule_date' : {
+					'$gte' : requestedStartDate,
+					'$lte' : requestedEndDate }
+				}
+	       ] } )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
