@@ -5,6 +5,10 @@ export default class Validator {
     return fieldName + ' is not formatted correctly. Expecting YYYY-MM-DDTHH:MM:SSZ';
   }
 
+  invalidGenreCodeMessage(fieldName) {
+    return fieldName + ' is not formatted correctly.  Expecting a short string such as, AR, CH, H2, etc.'
+  }
+
   invalidParameterMessage(fieldName) {
     return fieldName + ' parameter is not formatted correctly. Expecting an integer';
   }
@@ -12,10 +16,6 @@ export default class Validator {
   missingParameterMessage(fieldName) {
     return fieldName + ' parameter is missing, please check your query.';
   }
-
-  // checkEmptyParameter(parameter) {
-  //   return !!parameter;
-  // }
 
   checkDateFormat(dateString) {
     let dateFormat = /\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}Z/gi;
