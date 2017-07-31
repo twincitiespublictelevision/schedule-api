@@ -160,7 +160,7 @@ export default class SeriesRouter {
 			scheduleCollection.find( { $and : [
 				{ 'series.series_id' : seriesID },
 				{ 'schedule.schedule_date' : { '$eq' : new Date(requestedDate) } }
-				] } )
+			] } )
 			.skip( requestedSkip )
 			.limit( requestedLimit )
 			.toArray(function(error, docs) {
@@ -258,7 +258,7 @@ export default class SeriesRouter {
 					'$gte' : requestedStartDate,
 					'$lte' : requestedEndDate }
 				}
-	       ] } )
+	    ] } )
 			.skip( requestedSkip )
 			.limit( requestedLimit )
 			.toArray(function(error, docs) {
