@@ -160,7 +160,7 @@ export default class EpisodeRouter {
 			scheduleCollection.find( { $and: [
 				{ 'episode.program_id' : episodeID },
 				{ 'episode.version_id' : versionID }
-				] } )
+			] } )
 			.skip( requestedSkip )
 			.limit( requestedLimit )
 			.toArray(function(error, docs) {
@@ -211,8 +211,8 @@ export default class EpisodeRouter {
 
 		// Request values validation
 		let verify = new Validator();
-		let requestedDateIsValid = verify.checkDateFormat(requestedDate);
 		let episodeIdIsValid = verify.checkResponseIsNumber(request.params.id);
+		let requestedDateIsValid = verify.checkDateFormat(requestedDate);
 		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
 		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
 
@@ -302,9 +302,9 @@ export default class EpisodeRouter {
 
 		// Request values validation
 		let verify = new Validator();
+		let episodeIdIsValid = verify.checkResponseIsNumber(request.params.id);
 		let startDateIsValid = verify.checkDateFormat(requestedStartDate);
 		let endDateIsValid = verify.checkDateFormat(requestedEndDate);
-		let episodeIdIsValid = verify.checkResponseIsNumber(request.params.id);
 		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
 		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
 
@@ -347,7 +347,7 @@ export default class EpisodeRouter {
 				{ 'schedule.schedule_date' : {
 					'$gte' : new Date(requestedStartDate),
 					'$lte' : new Date(requestedEndDate) } }
-	       ] } )
+			] } )
 			.skip( requestedSkip )
 			.limit( requestedLimit )
 			.toArray(function(error, docs) {
