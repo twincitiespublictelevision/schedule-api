@@ -17,7 +17,7 @@ const httpsPrivateKey  = fs.readFileSync(process.env.HTTPS_PRIVATEKEY, 'utf8');
 const httpsCertificate = fs.readFileSync(process.env.HTTPS_CERTIFICATE, 'utf8');
 const httpsCredentials = {key: httpsPrivateKey, cert: httpsCertificate};
 
-// Server Connection
+// Server Connection Type
 
 const server = (process.env.ENABLE_TLS_SSL === 'true') ? https.createServer(httpsCredentials, app.express) : http.createServer(app.express);
 const port   = (process.env.ENABLE_TLS_SSL === 'true') ? normalizePort(process.env.HTTPS_SERVER_PORT) : normalizePort(process.env.HTTP_SERVER_PORT);
@@ -27,7 +27,7 @@ const port   = (process.env.ENABLE_TLS_SSL === 'true') ? normalizePort(process.e
 databaseConnectionError();
 databaseConnection();
 
-// HTTP Server Connection
+// Server Connection
 
 server.listen(port);
 server.on('error', onError);
