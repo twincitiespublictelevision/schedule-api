@@ -1,6 +1,7 @@
 
-import { Router } from 'express';
+import { Router }  from 'express';
 import { mongoDB } from '../database';
+import Validator   from '../helpers/requestValidator';
 
 export default class AiringRouter {
 
@@ -32,19 +33,58 @@ export default class AiringRouter {
 	 */
 	getAllAirings(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
-		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
+		let requestedLimit = parseInt(request.query.limit);
 
-		scheduleCollection.find()
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		// Request values validation
+		let verify = new Validator();
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find()
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -69,21 +109,60 @@ export default class AiringRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let channel = request.params.channel;
 		let requestedChannel = channel === '2' ? parseInt(channel) : channel;
-		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
+		let requestedLimit = parseInt(request.query.limit);
 
-		scheduleCollection.find( {
-			'schedule.schedule_channel' : requestedChannel
-		} )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		// Request values validation
+		let verify = new Validator();
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( {
+				'schedule.schedule_channel' : requestedChannel
+			} )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -92,7 +171,7 @@ export default class AiringRouter {
 	 */
 	getAiringsByDateHandler(mongoDB) {
 		return function(request, response) {
-			return this.getAiringsByDate(request, respionse, mongoDB);
+			return this.getAiringsByDate(request, response, mongoDB);
 		}.bind(this);
 	}
 
@@ -107,21 +186,65 @@ export default class AiringRouter {
 	getAiringsByDate(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let requestedDate = request.params.date;
-		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
+		let requestedLimit = parseInt(request.query.limit);
 
-		scheduleCollection.find( {
-			'schedule.schedule_date' : { '$eq' : new Date(requestedDate) }
-		} )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		// Request values validation
+		let verify = new Validator();
+		let requestedDateIsValid = verify.checkDateFormat(requestedDate);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!requestedDateIsValid) {
+			requestErrors.push(verify.invalidDateStringMessage('requestedDate'));
+		}
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( {
+				'schedule.schedule_date' : { '$eq' : new Date(requestedDate) }
+			} )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -146,23 +269,72 @@ export default class AiringRouter {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let requestedStartDate = request.params.startDate;
 		let requestedEndDate = request.params.endDate;
-		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
-		
-		scheduleCollection.find( {
-    	'schedule.schedule_date' : {
-    		'$gte' : new Date(requestedStartDate),
-    		'$lte' : new Date(requestedEndDate) }
-       } )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		let requestedLimit = parseInt(request.query.limit);
+
+		// Request values validation
+		let verify = new Validator();
+		let startDateIsValid = verify.checkDateFormat(requestedStartDate);
+		let endDateIsValid = verify.checkDateFormat(requestedEndDate);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
+
+		let requestErrors = [];
+
+		if (!startDateIsValid) {
+			requestErrors.push(verify.invalidDateStringMessage('startDate'));
+		}
+
+		if (!endDateIsValid) {
+			requestErrors.push(verify.invalidDateStringMessage('endDate'));
+		}
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( {
+				'schedule.schedule_date' : {
+					'$gte' : new Date(requestedStartDate),
+					'$lte' : new Date(requestedEndDate) }
+			} )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -186,22 +358,65 @@ export default class AiringRouter {
 	getAiringsByGenreCode(request, response, mongoDB) {
 		let scheduleCollection = mongoDB.collection('scheduleData');
 		let genreCode = request.params.genreCode;
-		let requestedLimit = parseInt(request.query.limit);
 		let requestedSkip = parseInt(request.query.skip);
+		let requestedLimit = parseInt(request.query.limit);
 
+		// Request values validation
+		let verify = new Validator();
+		let genreCodeIsValid = verify.checkDateFormat(genreCode);
+		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
+		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
 
-		scheduleCollection.find( {
-			'episode.epi_genrelist_nat.0.genrecd' : genreCode
-		} )
-		.skip( requestedSkip )
-		.limit( requestedLimit )
-		.toArray(function(error, docs) {
-			if (error) {
-				console.log(error);
-			}
-			response.status(200)
-			.json(docs);
-		});
+		let requestErrors = [];
+
+		if (!genreCodeIsValid) {
+			requestErrors.push(verify.invalidGenreCodeMessage('genreCode'));
+		}
+
+		if (!request.query.skip) {
+			request.query.skip = 0;
+		} else if (!skipIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('skipQuery'));
+		}
+
+		if (!request.query.limit) {
+			request.query.limit = 0;
+		} else if (!limitIsValid) {
+			requestErrors.push(verify.invalidParameterMessage('limitQuery'));
+		}
+
+		if (requestErrors.length !== 0) {
+			requestErrors.join('\n');
+			response.status(400);
+			response.send( {
+				error: requestErrors,
+				results: []
+			});
+		} else {
+			scheduleCollection.find( {
+				'episode.epi_genrelist_nat.0.genrecd' : genreCode
+			} )
+			.skip( requestedSkip )
+			.limit( requestedLimit )
+			.toArray(function(error, docs) {
+				if (docs.length === 0) {
+					response.status(200);
+					response.send( {
+						error: 'The query was valid, but returned no data.',
+						results: docs
+					});
+				} else {
+					if (error) {
+						console.log(error);
+					}
+					response.status(200)
+					response.send( {
+						error: '',
+						results: docs
+					});
+				}
+			});
+		}
 	}
 
 	/**
