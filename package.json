@@ -9,7 +9,8 @@
     "url": "https://github.com/twincitiespublictelevision/schedule-api"
   },
   "scripts": {
-    "test": "node --trace-warnings -r dotenv/config node_modules/.bin/jest",
+    "build": "node node_modules/gulp/bin/gulp.js",
+    "test": "node -r dotenv/config node_modules/.bin/jest",
     "debug": "DEBUG=express:* node build/index.js",
     "start": "node -r dotenv/config build/startProcess.js"
   },
