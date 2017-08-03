@@ -1,0 +1,42 @@
+version: 2
+jobs:
+  checkout:
+    docker:
+      - image: circleci/node:6.10
+    steps:
+      - restore_cache:
+          key: repo-{{ .Branch }}
+      - checkout
+      - run: echo $CIRCLE_SHA1 > .circle-sha
+      - save_cache:
+          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+          paths:
+            - ~/project
+
+  node_test:
+    docker:
+      - image: circleci/node:6.10
+    steps:
+      - run: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          key: repo-{{ .Branch }}-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          key: node_modules-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: node_modules-{{ checksum "package.json" }}
+          paths:
+            - ~/project/node_modules
+      - run: cp .example.env .env
+      - run:
+          name: Run JS Unit Tests
+          command: npm test
+
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - checkout
+      - node_test:
+          requires:
+            - checkout
