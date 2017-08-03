@@ -12,39 +12,6 @@ describe('scheduleAPI helper functions', function() {
 	});
 });
 
-// describe('scheduleAPI', function() {
-
-// 	describe('GET /api/v1/airings - get all airings', () => {
-// 		Tests the expected properties on the response object.
-// 		let expectedProps = ['_id', 'schedule', 'episode', 'series'];
-
-// 		it('should return objects with the correct properties', () => {
-// 			request(app).get('/api/v1/airings')
-// 			.expect(200)
-// 			.then(res => {
-// 				// Check for the expected properties
-// 				let sampleKeys = Object.keys(res.body[0]);
-// 				expectedProps.forEach(key => {
-// 					expect(sampleKeys.includes(key)).toBe(true);
-// 				});
-// 			});
-// 		});
-
-// 		it('shouldn\'t return objects with extra properties', () => {
-// 			return request(app).get('/api/v1/airings')
-// 			.expect(200)
-// 			.then(res => {
-// 				// Check only for the expected properties
-// 				let extraProps = Object.keys(res.body[0]).filter(key => {
-// 					return !expectedProps.includes(key);
-// 				});
-// 				expect(extraProps.length).toBe(0);
-// 			});
-// 		});
-// 	});
-// });
-
-
 let documents = [ {
 	"_id" : "5943f51235b1508ce228b56c",
 	"schedule" : {
@@ -132,43 +99,43 @@ function exitNode() {
 	process.exit(1);
 }
 
-describe('Test Handlers', () => {
+// describe('Test Handlers', () => {
 
-		//before each will be run to reset state
-	it('Responds with data from database', function() {
-		EpisodeRouter.prototype.getEpisodeByDateRange(request, response, mongoDB);
-		// console.log(response.json.mock, response.json.mock.calls);
-		expect(response.json.mock.calls.length).toBe(1);
-		expect(response.json.mock.calls[0][0]).toEqual(documents);
-	});
+// 		//before each will be run to reset state
+// 	it('Responds with data from database', function() {
+// 		EpisodeRouter.prototype.getEpisodeByDateRange(request, response, mongoDB);
+// 		// console.log(response.json.mock, response.json.mock.calls);
+// 		expect(response.json.mock.calls.length).toBe(1);
+// 		expect(response.json.mock.calls[0][0]).toEqual(documents);
+// 	});
 
-	it('Calls limit with limit parameter', function() {
-		let mockLimit = jest.fn();
+// 	it('Calls limit with limit parameter', function() {
+// 		let mockLimit = jest.fn();
 
-		mongoDB = {
-	    collection: function() {
-	      let query, skip, limit;
-	      return {
-					skip: function(value) {
-						skip = value;
-						return this;
-					},
-					limit: function(value) {
-						mockLimit(value);
-						return this;
-					},
-					find: function(value) {
-						query = value;
-						return this;
-					},
-	        toArray: function(cb) {
-	          cb(null, documents);
-	        }
-	      }
-	    }
-	  };
-		EpisodeRouter.prototype.getEpisodeByDateRange(request, response, mongoDB);
-		expect(response.json.mock.calls.length).toBe(2);
-		expect(request.query.limit).toEqual(4);
-	});
-});
+// 		mongoDB = {
+// 	    collection: function() {
+// 	      let query, skip, limit;
+// 	      return {
+// 					skip: function(value) {
+// 						skip = value;
+// 						return this;
+// 					},
+// 					limit: function(value) {
+// 						mockLimit(value);
+// 						return this;
+// 					},
+// 					find: function(value) {
+// 						query = value;
+// 						return this;
+// 					},
+// 	        toArray: function(cb) {
+// 	          cb(null, documents);
+// 	        }
+// 	      }
+// 	    }
+// 	  };
+// 		EpisodeRouter.prototype.getEpisodeByDateRange(request, response, mongoDB);
+// 		expect(response.json.mock.calls.length).toBe(2);
+// 		expect(request.query.limit).toEqual(4);
+// 	});
+// });
