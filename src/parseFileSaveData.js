@@ -16,6 +16,7 @@ function parseFileSaveData(file) {
 			console.log(error);
 		} else {
 			let scheduleData = extractScheduleData(parseData);
+
 			console.log(`Starting DB write of ${filename}.`);
 			removeOldInsertNew(mongoDB, scheduleData);
 		}

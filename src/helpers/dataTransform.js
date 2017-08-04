@@ -33,7 +33,7 @@ function scheduleObject(schedule) {
 			schedule_date: schedule.schedule_date,
 			schedule_duration: schedule.schedule_duration
 		}
-	}
+	};
 	return scheduleObject;
 }
 
@@ -120,9 +120,9 @@ function extractScheduleData(parseData) {
 					let newSeriesObject = seriesObject(series);
 					return Object.assign({}, newScheduleObject, newEpisodeObject, newSeriesObject);
 				});
-		})
+		});
 		return [].concat.apply([], series_airings);
-	})
+	});
 	return [].concat.apply([], full_data);
 }
 
