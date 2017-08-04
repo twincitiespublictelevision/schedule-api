@@ -14,15 +14,15 @@
 
 1. `git clone https://github.com/twincitiespublictelevision/schedule-api.git`
 2. Run `npm install` to install the project dependencies
-4. Set up a directory for the watch, working, and backup directories
-5. Set up a directory / files for the server and application logs
-6. Run `npm run build` to create the initial build / transpile of the project
-7. Set up MongoDB and add collection name and authentication info to the `.env` file.
+3. Set up a directory for the watch, working, and backup directories
+4. Set up a directory / files for the server and application logs
+5. Run `npm run build` to create the initial build / transpile of the project
+6. Set up MongoDB and add collection name and authentication info to the `.env` file.
  * The API supports authenticating with the username and password as options vs. in the connection string.
  * Ensure the database connection is using TSL/SSL if the HTTPS config option is set to `true`.
-8. Create a config file based on the `.example.env` file (see the [Configuration](#configuration-options) section below).
+7. Create a config file based on the `.example.env` file (see the [Configuration](#configuration-options) section below).
  * e.g. `$ cp .example.env .env`
-9. Launch the server / API using `npm start`
+8. Launch the server / API using `npm start`
 
 ## Tests
 
@@ -62,7 +62,7 @@ A sample config file is supplied in `.example.env`
 | HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
 | HTTPS_PRIVATEKEY    | Path to the directory where the private key file is saved |
 | HTTPS_CERTIFICATE   | Path to the directory where the certificate file is saved |
-| ENABLE\_TLS_SSL      | True / False - Option to enable or disable a secure connection     |
+| ENABLE\_TLS_SSL     | True / False - Option to enable or disable a secure connection     |
 | HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
 | HTTPS\_SERVER_PORT  | Port the https server will listen on                 |
 
@@ -75,8 +75,8 @@ These are the values required to connect to the MongoDB instance
 | DB_HOST     | Host address for the DB                  |
 | DB_PORT     | Port number for the DB, default is 27017 |
 | DB_NAME     | Name of the database (collection)        |
-| DB_USERNAME | Username for the database                |
-| DB_PASSWORD | Password for the database                |
+| DB_USER     | Username for the database                |
+| DB_PASS     | Password for the database                |
 
 ### Logging
 
