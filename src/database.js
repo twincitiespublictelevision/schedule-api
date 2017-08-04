@@ -1,10 +1,13 @@
 
 import mongoose from 'mongoose';
 
+const mongoOptions = {
+	server: { ssl: process.env.ENABLE_TLS_SSL === 'true' },
+	user: process.env.DB_USER,
+	pass: process.env.DB_PASS
+};
 const mongoURI = `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-const mongoDB  = (process.env.ENABLE_TLS_SSL === 'true') ?
-mongoose.connect(mongoURI, { server: { ssl: true }}).connection :
-mongoose.connect(mongoURI).connection;
+const mongoDB = mongoose.connect(mongoURI, mongoOptions).connection;
 
 /**
  * Event listener for error when conneting to the database.
@@ -116,7 +119,7 @@ function findAll(fn) {
 			console.log(error);
 		}
 		console.log('finding');
-	})
+	});
 }
 
 /**
