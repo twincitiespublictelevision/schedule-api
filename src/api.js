@@ -22,7 +22,7 @@ export default class Api {
 	middleware() {
 		this.express.use(bodyParser.json());
 		this.express.use(bodyParser.urlencoded({ extended: false }));
-		this.express.use(morgan(process.env.SERVER.LOG_LEVEL));
+		this.express.use(morgan(process.env.SERVER_LOG_LEVEL));
 		this.express.use(morgan('{' +
 		'"remote_addr": ":remote-addr",' +
 		'"remote_user": ":remote-user",' +
