@@ -16,11 +16,13 @@
 2. Run `npm install` to install the project dependencies
 4. Set up a directory for the watch, working, and backup directories
 5. Set up a directory / files for the server and application logs
-6. Set up MongoDB with the username, password, and collection (database) name
+6. Run `npm run build` to create the initial build / transpile of the project
+7. Set up MongoDB and add collection name and authentication info to the `.env` file.
+ * The API supports authenticating with the username and password as options vs. in the connection string.
  * Ensure the database connection is using TSL/SSL if the HTTPS config option is set to `true`.
-7. Create a config file based on the `.example.env` file (see the [Configuration](#configuration-options) section below).
- * e.g. `cp .example.env .env`
-8. Launch the server / API using `npm start`
+8. Create a config file based on the `.example.env` file (see the [Configuration](#configuration-options) section below).
+ * e.g. `$ cp .example.env .env`
+9. Launch the server / API using `npm start`
 
 ## Tests
 
@@ -82,9 +84,12 @@ These are the values required to connect to the MongoDB instance
 | --------   | ----------------        |
 | ACCESS_LOG | Path to server log file |
 | ERROR_LOG  | Path to error log file  |
-| LOG_LEVEL  | Error level to log      |
+| APP\_LOG\_LEVEL     | App error log level  |
+| SERVER\_LOG\_LEVEL  | Server error log level  |
 
 #### Error Severity
+
+App level logging is not yet implemented.  The format will match the following.
 ```
 * emergency: System is unusable
 * alert:     Action must be taken immediately
@@ -94,6 +99,16 @@ These are the values required to connect to the MongoDB instance
 * notice:    Normal but significant condition
 * info:      Informational message
 * debug:     Debug-level messages
+```
+
+Server level logging.  This is provided by the [Morgan library](https://github.com/expressjs/morgan).
+
+```
+* combined:		Standard Apache COMBINED log output.
+* common: 		Standard Apache COMMON log output.
+* dev:			Concise output colored by response status for development use.
+* short:		Shorter than default, also including response time.
+* tiny:			The minimal output
 ```
 
 ## Usage
