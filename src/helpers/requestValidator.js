@@ -58,6 +58,6 @@ export default class Validator {
   checkGenreCode(genreCode) {
     let codeFormat = /[a-z0-9]{2,4}/gi;
     
-    return codeFormat.text(genreCode);
+    return codeFormat.test(genreCode);
   }
 }

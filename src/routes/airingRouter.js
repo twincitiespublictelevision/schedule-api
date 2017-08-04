@@ -363,7 +363,7 @@ export default class AiringRouter {
 
 		// Request values validation
 		let verify = new Validator();
-		let genreCodeIsValid = verify.checkDateFormat(genreCode);
+		let genreCodeIsValid = verify.checkGenreCode(genreCode);
 		let skipIsValid = verify.checkResponseIsNumber(request.query.skip);
 		let limitIsValid = verify.checkResponseIsNumber(request.query.limit);
 
