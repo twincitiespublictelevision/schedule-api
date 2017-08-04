@@ -1,6 +1,6 @@
 
+import { mongoDB as dbConnection } from '../src/database.js';
 import EpisodeRouter from '../src/routes/episodeRouter.js';
-// import Api from '../src/api.js';
 import { leadingZero } from '../src/helpers/fileInOut.js'
 
 describe('scheduleAPI helper functions', function() {
@@ -79,8 +79,8 @@ let mongoDB = {
 let request = {
 	"params": {
 		"id": 1,
-		"startDate": 2,
-		"endDate": 3
+		"startDate": '2017-03-18T04:30:00z',
+		"endDate": '2017-03-18T06:30:00z'
 	},
 	"query": {
 		"limit": 4,
@@ -92,6 +92,7 @@ let response = {
 	"status": function() {
 		return this;
 	},
+	"send": jest.fn(),
 	"json": jest.fn()
 }
 
@@ -99,43 +100,50 @@ function exitNode() {
 	process.exit(1);
 }
 
-// describe('Test Handlers', () => {
+describe('Test Handlers', () => {
 
-// 		//before each will be run to reset state
-// 	it('Responds with data from database', function() {
-// 		EpisodeRouter.prototype.getEpisodeByDateRange(request, response, mongoDB);
-// 		// console.log(response.json.mock, response.json.mock.calls);
-// 		expect(response.json.mock.calls.length).toBe(1);
-// 		expect(response.json.mock.calls[0][0]).toEqual(documents);
-// 	});
+		//before each will be run to reset state
+	it('Responds with data from database', function() {
+		EpisodeRouter.prototype.getEpisodeByDateRange(request, response, mongoDB);
+		// console.log(response.json.mock, response.json.mock.calls);
+		expect(response.send.mock.calls.length).toBe(1);
+		expect(response.send.mock.calls[0][0]).toEqual(
+			{'error': '',
+			'results': documents
+		});
+	});
 
-// 	it('Calls limit with limit parameter', function() {
-// 		let mockLimit = jest.fn();
+	it('Calls limit with limit parameter', function() {
+		let mockLimit = jest.fn();
 
-// 		mongoDB = {
-// 	    collection: function() {
-// 	      let query, skip, limit;
-// 	      return {
-// 					skip: function(value) {
-// 						skip = value;
-// 						return this;
-// 					},
-// 					limit: function(value) {
-// 						mockLimit(value);
-// 						return this;
-// 					},
-// 					find: function(value) {
-// 						query = value;
-// 						return this;
-// 					},
-// 	        toArray: function(cb) {
-// 	          cb(null, documents);
-// 	        }
-// 	      }
-// 	    }
-// 	  };
-// 		EpisodeRouter.prototype.getEpisodeByDateRange(request, response, mongoDB);
-// 		expect(response.json.mock.calls.length).toBe(2);
-// 		expect(request.query.limit).toEqual(4);
-// 	});
-// });
+		mongoDB = {
+	    collection: function() {
+	      let query, skip, limit;
+	      return {
+					skip: function(value) {
+						skip = value;
+						return this;
+					},
+					limit: function(value) {
+						mockLimit(value);
+						return this;
+					},
+					find: function(value) {
+						query = value;
+						return this;
+					},
+	        toArray: function(cb) {
+	          cb(null, documents);
+	        }
+	      }
+	    }
+	  };
+		EpisodeRouter.prototype.getEpisodeByDateRange(request, response, mongoDB);
+		expect(response.send.mock.calls.length).toBe(2);
+		expect(request.query.limit).toEqual(4);
+	});
+});
+
+afterAll(function() {
+	dbConnection.close();
+});
