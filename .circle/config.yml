@@ -42,7 +42,10 @@ workflows:
   version: 2
   test_and_build:
     jobs:
-      - checkout
+      - checkout:
+          context: staging
+
       - node_test:
+          context: staging
           requires:
             - checkout
