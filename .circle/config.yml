@@ -3,6 +3,9 @@ jobs:
   checkout:
     docker:
       - image: circleci/node:6.10
+        auth:
+          username: $DOCKERHUB_ACCOUNT
+          password: $DOCKERHUB_PASSWORD
     steps:
       - restore_cache:
           key: repo-{{ .Branch }}
@@ -16,6 +19,9 @@ jobs:
   node_test:
     docker:
       - image: circleci/node:6.10
+        auth:
+          username: $DOCKERHUB_ACCOUNT
+          password: $DOCKERHUB_PASSWORD
     steps:
       - run: echo $CIRCLE_SHA1 > .circle-sha
       - restore_cache:
@@ -36,7 +42,10 @@ workflows:
   version: 2
   test_and_build:
     jobs:
-      - checkout
+      - checkout:
+          context: staging
+
       - node_test:
+          context: staging
           requires:
             - checkout
